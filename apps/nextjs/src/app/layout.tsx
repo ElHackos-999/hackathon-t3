@@ -6,6 +6,7 @@ import { Sidebar } from "@acme/ui/sidebar";
 import { ThemeProvider, ThemeToggle } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
+import { ThirdwebProvider } from "~/app/components/ThirdwebProvider";
 import { env } from "~/env";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -17,13 +18,13 @@ export const metadata: Metadata = {
       ? "https://turbo.t3.gg"
       : "http://localhost:3000",
   ),
-  title: "Create T3 Turbo",
-  description: "Simple monorepo with shared backend for web & mobile apps",
+  title: "PFC",
+  description: "Proof of Certification",
   openGraph: {
-    title: "Create T3 Turbo",
-    description: "Simple monorepo with shared backend for web & mobile apps",
-    url: "https://create-t3-turbo.vercel.app",
-    siteName: "Create T3 Turbo",
+    title: "PFC",
+    description: "Proof of Certification",
+    url: "https://pfc.vercel.app",
+    siteName: "PFC",
   },
   twitter: {
     card: "summary_large_image",
@@ -59,12 +60,14 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         )}
       >
         <ThemeProvider>
-          <TRPCReactProvider>
-            <div className="flex min-h-screen">
-              <Sidebar className="hidden md:block" />
-              <main className="flex-1">{props.children}</main>
-            </div>
-          </TRPCReactProvider>
+          <ThirdwebProvider>
+            <TRPCReactProvider>
+              <div className="flex min-h-screen">
+                <Sidebar className="hidden md:block" />
+                <main className="flex-1">{props.children}</main>
+              </div>
+            </TRPCReactProvider>
+          </ThirdwebProvider>
           <div className="absolute right-4 bottom-4">
             <ThemeToggle />
           </div>
