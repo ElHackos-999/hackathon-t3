@@ -18,7 +18,12 @@
       "Bash(gh pr edit:*)",
       "Bash(mkdir:*)",
       "Bash(pnpm test:*)",
-      "Skill(superpowers:brainstorming)"
+      "Skill(superpowers:brainstorming)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm turbo typecheck:*)",
+      "Bash(pnpm -F @acme/nextjs typecheck:*)",
+      "Bash(pnpm -F @acme/api build:*)",
+      "Bash(pnpm -F @acme/nextjs build:*)"
     ],
     "deny": [],
     "ask": []

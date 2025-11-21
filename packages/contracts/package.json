@@ -1,10 +1,6 @@
 {
   "name": "@acme/contracts",
   "private": true,
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "license": "MIT",
   "scripts": {
     "build": "pnpm clean && pnpm compile",
