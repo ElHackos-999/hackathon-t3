@@ -56,4 +56,54 @@ contract TrainingCertification is ERC1155, ERC1155Supply, AccessControl {
     {
         super._update(from, to, ids, values);
     }
+
+    /**
+     * @notice Create a new course with certification parameters
+     * @param courseCode Unique identifier for the course (e.g., "REACT-101")
+     * @param courseName Display name of the course
+     * @param imageURI URI pointing to the certification badge image
+     * @param validityDuration How long the certification is valid (in seconds)
+     * @return tokenId The newly assigned token ID for this course
+     */
+    function createCourse(
+        string memory courseCode,
+        string memory courseName,
+        string memory imageURI,
+        uint256 validityDuration
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+        require(bytes(courseCode).length > 0, "Course code cannot be empty");
+        require(bytes(courseName).length > 0, "Course name cannot be empty");
+        require(bytes(imageURI).length > 0, "Image URI cannot be empty");
+        require(validityDuration > 0, "Validity duration must be greater than zero");
+
+        bytes32 courseCodeHash = keccak256(bytes(courseCode));
+        require(_courseCodeToTokenId[courseCodeHash] == 0, "Course code already exists");
+
+        uint256 tokenId = _nextTokenId;
+        _nextTokenId++;
+
+        _courses[tokenId] = Course({
+            courseCode: courseCode,
+            courseName: courseName,
+            imageURI: imageURI,
+            validityDuration: validityDuration,
+            exists: true
+        });
+
+        _courseCodeToTokenId[courseCodeHash] = tokenId;
+
+        emit CourseCreated(tokenId, courseCode, courseName);
+
+        return tokenId;
+    }
+
+    /**
+     * @notice Get course information by token ID
+     * @param tokenId The token ID of the course
+     * @return course The course data
+     */
+    function getCourse(uint256 tokenId) external view returns (Course memory) {
+        require(_courses[tokenId].exists, "Course does not exist");
+        return _courses[tokenId];
+    }
 }
