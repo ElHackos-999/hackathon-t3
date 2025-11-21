@@ -378,4 +378,80 @@ describe("TrainingCertification", function () {
       });
     });
   });
+
+  describe("Metadata", function () {
+    const courseCode = "REACT-101";
+    const courseName = "React Developer Certification";
+    const imageURI = "https://example.com/badges/react-101.png";
+    const validityDuration = 31536000; // 1 year
+
+    beforeEach(async function () {
+      await contract.createCourse(courseCode, courseName, imageURI, validityDuration);
+    });
+
+    describe("uri", function () {
+      it("Should return JSON metadata for existing course", async function () {
+        const uri = await contract.uri(1);
+
+        // Should return a data URI with base64 encoding
+        expect(uri).to.include("data:application/json;base64,");
+
+        // Decode and verify the JSON contents
+        const base64Data = uri.replace("data:application/json;base64,", "");
+        const jsonString = Buffer.from(base64Data, "base64").toString("utf-8");
+        const metadata = JSON.parse(jsonString);
+
+        expect(metadata.name).to.equal(courseName);
+        expect(metadata.image).to.equal(imageURI);
+        expect(metadata.attributes).to.have.lengthOf(2);
+        expect(metadata.attributes[0].value).to.equal(courseCode);
+      });
+
+      it("Should revert for non-existent course", async function () {
+        await expect(contract.uri(999)).to.be.revertedWith("Course does not exist");
+      });
+    });
+
+    describe("getTotalCourses", function () {
+      it("Should return correct course count", async function () {
+        expect(await contract.getTotalCourses()).to.equal(1);
+
+        await contract.createCourse("VUE-101", "Vue Cert", imageURI, validityDuration);
+        expect(await contract.getTotalCourses()).to.equal(2);
+      });
+
+      it("Should return 0 when no courses created", async function () {
+        const freshContract = await (await ethers.getContractFactory("TrainingCertification")).deploy();
+        expect(await freshContract.getTotalCourses()).to.equal(0);
+      });
+    });
+
+    describe("Helper Functions", function () {
+      beforeEach(async function () {
+        await contract.connect(minter).mintCertification(student.address, 1, "0x");
+      });
+
+      it("getCourse should return complete course data", async function () {
+        const course = await contract.getCourse(1);
+
+        expect(course.courseCode).to.equal(courseCode);
+        expect(course.courseName).to.equal(courseName);
+        expect(course.imageURI).to.equal(imageURI);
+        expect(course.validityDuration).to.equal(validityDuration);
+        expect(course.exists).to.be.true;
+      });
+
+      it("getMintTimestamp should return mint time", async function () {
+        const timestamp = await contract.getMintTimestamp(1, student.address);
+        expect(timestamp).to.be.greaterThan(0);
+      });
+
+      it("getExpiryTimestamp should return expiry time", async function () {
+        const mintTime = await contract.getMintTimestamp(1, student.address);
+        const expiryTime = await contract.getExpiryTimestamp(1, student.address);
+
+        expect(expiryTime).to.equal(mintTime + BigInt(validityDuration));
+      });
+    });
+  });
 });

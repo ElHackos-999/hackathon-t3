@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
  * @title TrainingCertification
@@ -252,6 +254,51 @@ contract TrainingCertification is ERC1155, ERC1155Supply, AccessControl {
      */
     function getMintTimestamp(uint256 tokenId, address holder) external view returns (uint256) {
         return _mintTimestamps[tokenId][holder];
+    }
+
+    /**
+     * @notice Get metadata URI for a token
+     * @param tokenId Course token ID
+     * @return JSON metadata as data URI
+     */
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        require(_courses[tokenId].exists, "Course does not exist");
+
+        Course memory course = _courses[tokenId];
+
+        string memory json = string(
+            abi.encodePacked(
+                '{"name":"',
+                course.courseName,
+                '","description":"Official certification for ',
+                course.courseName,
+                '","image":"',
+                course.imageURI,
+                '","attributes":[',
+                '{"trait_type":"Course Code","value":"',
+                course.courseCode,
+                '"},',
+                '{"trait_type":"Validity Duration","value":"',
+                Strings.toString(course.validityDuration),
+                ' seconds"}',
+                ']}'
+            )
+        );
+
+        return string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(bytes(json))
+            )
+        );
+    }
+
+    /**
+     * @notice Get total number of courses created
+     * @return count Total courses
+     */
+    function getTotalCourses() external view returns (uint256) {
+        return _nextTokenId - 1;
     }
 
     /**
