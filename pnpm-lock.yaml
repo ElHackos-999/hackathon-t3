@@ -104,6 +104,9 @@ importers:
       '@acme/validators':
         specifier: workspace:*
         version: link:../../packages/validators
+      '@heyputer/puter.js':
+        specifier: ^2.1.6
+        version: 2.1.6
       '@t3-oss/env-nextjs':
         specifier: ^0.13.8
         version: 0.13.8(arktype@2.1.20)(typescript@5.9.3)(valibot@1.0.0-beta.15(typescript@5.9.3))(zod@4.1.12)
@@ -134,6 +137,12 @@ importers:
       superjson:
         specifier: 2.2.3
         version: 2.2.3
+      three:
+        specifier: ^0.181.2
+        version: 0.181.2
+      three-custom-shader-material:
+        specifier: ^6.4.0
+        version: 6.4.0(react@19.1.1)(three@0.181.2)
       zod:
         specifier: 'catalog:'
         version: 4.1.12
@@ -1193,6 +1202,15 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@heyputer/kv.js@0.2.1':
+    resolution: {integrity: sha512-YhVtzz7ZA/HmuaDvzZZhhUyQWBvp3/TXeY4jULssTdLJwT+tEM4BTYHXttORX+V5auvrYinjj8dNFQnby5T82w==}
+
+  '@heyputer/puter.js@2.1.6':
+    resolution: {integrity: sha512-IPe4x5MmqQx0qqMvZGK18N1uvdAYegRETXMhHV4LYdOEChQ9nQCSgyDIeZa2RmtTUAWTasdI1wr1qB7o5OoASA==}
+
+  '@heyputer/putility@1.1.1':
+    resolution: {integrity: sha512-auedlVnHli2o8VtyR3Uj8JjlyaC1OPWHtcTgYdsMF46i+/lHz2iXK47Pwq2J9fdgM6sJX9lGtDZL6T10xJRrOA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -6296,6 +6314,21 @@ packages:
     resolution: {integrity: sha512-3ZBiG7JvP3wbDzA9iNY5zJQcHL4jn/0BWtXIkagfz7QgOL/LqjCEOBQuJNZfu0XYnv5JhKh+cDxCPM4ILrqruA==}
     engines: {node: '>=6.0.0'}
 
+  three-custom-shader-material@6.4.0:
+    resolution: {integrity: sha512-dIbkwX1P4DcHMOZrywW+/TDp5qJhlyU6NP/2kmHw91UqC+TrK4JSBtAV3qGc6UnkqSOmR1i0O+Yz5EnTp2aQ1g==}
+    peerDependencies:
+      '@react-three/fiber': '>=8.0'
+      react: '>=18.0'
+      three: '>=0.159'
+    peerDependenciesMeta:
+      '@react-three/fiber':
+        optional: true
+      react:
+        optional: true
+
+  three@0.181.2:
+    resolution: {integrity: sha512-k/CjiZ80bYss6Qs7/ex1TBlPD11whT9oKfT8oTGiHa34W4JRd1NiH/Tr1DbHWQ2/vMUypxksLnF2CfmlmM5XFQ==}
+
   through2@4.0.2:
     resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
 
@@ -7635,6 +7668,15 @@ snapshots:
       react-dom: 19.1.1(react@19.1.1)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@heyputer/kv.js@0.2.1': {}
+
+  '@heyputer/puter.js@2.1.6':
+    dependencies:
+      '@heyputer/kv.js': 0.2.1
+      '@heyputer/putility': 1.1.1
+
+  '@heyputer/putility@1.1.1': {}
 
   '@humanfs/core@0.19.1': {}
 
@@ -13537,6 +13579,14 @@ snapshots:
       http-response-object: 3.0.2
       promise: 8.3.0
       qs: 6.14.0
+
+  three-custom-shader-material@6.4.0(react@19.1.1)(three@0.181.2):
+    dependencies:
+      three: 0.181.2
+    optionalDependencies:
+      react: 19.1.1
+
+  three@0.181.2: {}
 
   through2@4.0.2:
     dependencies:
