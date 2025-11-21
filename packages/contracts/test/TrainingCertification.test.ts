@@ -283,4 +283,99 @@ describe("TrainingCertification", function () {
       });
     });
   });
+
+  describe("Validation", function () {
+    const courseCode = "REACT-101";
+    const courseName = "React Developer Certification";
+    const imageURI = "https://example.com/badges/react-101.png";
+    const validityDuration = 31536000; // 1 year
+
+    beforeEach(async function () {
+      await contract.createCourse(courseCode, courseName, imageURI, validityDuration);
+      await contract.connect(minter).mintCertification(student.address, 1, "0x");
+    });
+
+    describe("isValid", function () {
+      it("Should return true for valid certification", async function () {
+        expect(await contract.isValid(1, student.address)).to.be.true;
+      });
+
+      it("Should return false after expiry", async function () {
+        // Fast forward past expiry
+        await ethers.provider.send("evm_increaseTime", [validityDuration + 1]);
+        await ethers.provider.send("evm_mine", []);
+
+        expect(await contract.isValid(1, student.address)).to.be.false;
+      });
+
+      it("Should return false for non-holder", async function () {
+        expect(await contract.isValid(1, unauthorized.address)).to.be.false;
+      });
+
+      it("Should return false for zero balance", async function () {
+        expect(await contract.isValid(1, owner.address)).to.be.false;
+      });
+
+      it("Should return true just before expiry", async function () {
+        // Fast forward to 1 second before expiry
+        await ethers.provider.send("evm_increaseTime", [validityDuration - 1]);
+        await ethers.provider.send("evm_mine", []);
+
+        expect(await contract.isValid(1, student.address)).to.be.true;
+      });
+
+      it("Should return false at exact expiry time", async function () {
+        // Fast forward to exact expiry
+        await ethers.provider.send("evm_increaseTime", [validityDuration]);
+        await ethers.provider.send("evm_mine", []);
+
+        expect(await contract.isValid(1, student.address)).to.be.false;
+      });
+    });
+
+    describe("isValidBatch", function () {
+      beforeEach(async function () {
+        await contract.connect(minter).mintCertification(unauthorized.address, 1, "0x");
+      });
+
+      it("Should return validity for multiple holders", async function () {
+        const holders = [student.address, unauthorized.address, owner.address];
+        const results = await contract.isValidBatch(1, holders);
+
+        expect(results[0]).to.be.true; // student has valid cert
+        expect(results[1]).to.be.true; // unauthorized has valid cert
+        expect(results[2]).to.be.false; // owner has no cert
+      });
+
+      it("Should handle expired certifications in batch", async function () {
+        await ethers.provider.send("evm_increaseTime", [validityDuration + 1]);
+        await ethers.provider.send("evm_mine", []);
+
+        const holders = [student.address, unauthorized.address];
+        const results = await contract.isValidBatch(1, holders);
+
+        expect(results[0]).to.be.false;
+        expect(results[1]).to.be.false;
+      });
+
+      it("Should reject empty holders array", async function () {
+        await expect(
+          contract.isValidBatch(1, [])
+        ).to.be.revertedWith("Holders array cannot be empty");
+      });
+    });
+
+    describe("getExpiryTimestamp", function () {
+      it("Should return correct expiry timestamp", async function () {
+        const mintTimestamp = await contract.getMintTimestamp(1, student.address);
+        const expiryTimestamp = await contract.getExpiryTimestamp(1, student.address);
+
+        expect(expiryTimestamp).to.equal(mintTimestamp + BigInt(validityDuration));
+      });
+
+      it("Should return 0 for non-holder", async function () {
+        expect(await contract.getExpiryTimestamp(1, unauthorized.address)).to.equal(0);
+      });
+    });
+  });
 });

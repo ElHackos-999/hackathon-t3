@@ -175,6 +175,76 @@ contract TrainingCertification is ERC1155, ERC1155Supply, AccessControl {
     }
 
     /**
+     * @notice Check if a certification is currently valid
+     * @param tokenId Course token ID
+     * @param holder Address of the certificate holder
+     * @return bool True if holder has a non-expired certification
+     */
+    function isValid(uint256 tokenId, address holder) external view returns (bool) {
+        if (balanceOf(holder, tokenId) == 0) {
+            return false;
+        }
+
+        uint256 mintTimestamp = _mintTimestamps[tokenId][holder];
+        if (mintTimestamp == 0) {
+            return false;
+        }
+
+        uint256 expiryTimestamp = mintTimestamp + _courses[tokenId].validityDuration;
+        return block.timestamp < expiryTimestamp;
+    }
+
+    /**
+     * @notice Check validity for multiple holders
+     * @param tokenId Course token ID
+     * @param holders Array of addresses to check
+     * @return results Array of validity results matching holders array
+     */
+    function isValidBatch(uint256 tokenId, address[] memory holders)
+        external
+        view
+        returns (bool[] memory)
+    {
+        require(holders.length > 0, "Holders array cannot be empty");
+
+        bool[] memory results = new bool[](holders.length);
+
+        for (uint256 i = 0; i < holders.length; i++) {
+            address holder = holders[i];
+
+            if (balanceOf(holder, tokenId) == 0) {
+                results[i] = false;
+                continue;
+            }
+
+            uint256 mintTimestamp = _mintTimestamps[tokenId][holder];
+            if (mintTimestamp == 0) {
+                results[i] = false;
+                continue;
+            }
+
+            uint256 expiryTimestamp = mintTimestamp + _courses[tokenId].validityDuration;
+            results[i] = block.timestamp < expiryTimestamp;
+        }
+
+        return results;
+    }
+
+    /**
+     * @notice Get the expiry timestamp for a holder's certification
+     * @param tokenId Course token ID
+     * @param holder Address of the certificate holder
+     * @return timestamp When the certification expires (0 if not held)
+     */
+    function getExpiryTimestamp(uint256 tokenId, address holder) external view returns (uint256) {
+        uint256 mintTimestamp = _mintTimestamps[tokenId][holder];
+        if (mintTimestamp == 0) {
+            return 0;
+        }
+        return mintTimestamp + _courses[tokenId].validityDuration;
+    }
+
+    /**
      * @notice Get the mint timestamp for a holder's certification
      * @param tokenId Course token ID
      * @param holder Address of the certificate holder
