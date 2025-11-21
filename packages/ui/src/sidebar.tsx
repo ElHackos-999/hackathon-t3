@@ -2,9 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  GraduationCap,
+  LayoutDashboard,
+  Settings,
+  ShieldCheck,
+} from "lucide-react";
+
 import { cn } from "@acme/ui";
+
 import { Button } from "./button";
-import { LayoutDashboard, GraduationCap, ShieldCheck, Settings } from "lucide-react";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -30,7 +37,12 @@ export function Sidebar({ className }: SidebarProps) {
   ];
 
   return (
-    <div className={cn("pb-12 w-64 border-r min-h-screen bg-background", className)}>
+    <div
+      className={cn(
+        "bg-background min-h-screen w-64 border-r pb-12",
+        className,
+      )}
+    >
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
@@ -60,7 +72,7 @@ export function Sidebar({ className }: SidebarProps) {
             Verification
           </h2>
           <div className="space-y-1">
-             <Button
+            <Button
               variant={pathname?.startsWith("/proof") ? "secondary" : "ghost"}
               className="w-full justify-start"
               asChild

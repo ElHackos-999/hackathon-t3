@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { cn } from "@acme/ui";
+import { Sidebar } from "@acme/ui/sidebar";
 import { ThemeProvider, ThemeToggle } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
-import { Sidebar } from "@acme/ui/sidebar";
 
 import { env } from "~/env";
 import { TRPCReactProvider } from "~/trpc/react";
@@ -62,9 +62,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           <TRPCReactProvider>
             <div className="flex min-h-screen">
               <Sidebar className="hidden md:block" />
-              <main className="flex-1">
-                {props.children}
-              </main>
+              <main className="flex-1">{props.children}</main>
             </div>
           </TRPCReactProvider>
           <div className="absolute right-4 bottom-4">

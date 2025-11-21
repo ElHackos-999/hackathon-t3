@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+
 import { Button } from "./button";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Label } from "./label";
 import {
   Select,
   SelectContent,
@@ -10,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./select";
-import { Label } from "./label";
 
 interface User {
   id: string;
@@ -85,8 +86,8 @@ export function AdminMintCertificateCard({
           </Select>
         </div>
 
-        <Button 
-          onClick={handleMint} 
+        <Button
+          onClick={handleMint}
           disabled={isLoading || !selectedUser || !selectedCourse}
           className="w-full"
         >

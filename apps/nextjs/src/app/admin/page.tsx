@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { CourseFormCard } from "@acme/ui/course-form-card";
+
 import { AdminMintCertificateCard } from "@acme/ui/admin-mint-certificate-card";
+import { CourseFormCard } from "@acme/ui/course-form-card";
 
 export default function AdminPage() {
   // Mock state
@@ -26,20 +27,20 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="container mx-auto space-y-8 py-8">
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-      
+
       <div className="grid gap-8 md:grid-cols-2">
         <div>
-          <h2 className="text-xl font-semibold mb-4">Course Management</h2>
-          <CourseFormCard 
+          <h2 className="mb-4 text-xl font-semibold">Course Management</h2>
+          <CourseFormCard
             onSubmit={handleCreateCourse}
             isSubmitting={isSubmitting}
           />
         </div>
-        
+
         <div>
-          <h2 className="text-xl font-semibold mb-4">Minting</h2>
+          <h2 className="mb-4 text-xl font-semibold">Minting</h2>
           <AdminMintCertificateCard
             users={[
               { id: "1", email: "user@example.com", name: "Alice User" },

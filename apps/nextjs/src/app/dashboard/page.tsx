@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { CompletedCoursesGrid } from "@acme/ui/completed-courses-grid";
 import { MyProofsTable } from "@acme/ui/my-proofs-table";
 
@@ -25,14 +26,16 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-12">
+    <div className="container mx-auto space-y-12 py-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2">My Learning Dashboard</h1>
-        <p className="text-muted-foreground">Manage your course completions and certificates.</p>
+        <h1 className="mb-2 text-3xl font-bold">My Learning Dashboard</h1>
+        <p className="text-muted-foreground">
+          Manage your course completions and certificates.
+        </p>
       </div>
 
       <section>
-        <h2 className="text-2xl font-semibold mb-6">Completed Courses</h2>
+        <h2 className="mb-6 text-2xl font-semibold">Completed Courses</h2>
         <CompletedCoursesGrid
           completions={[
             {
@@ -58,7 +61,7 @@ export default function DashboardPage() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold mb-6">My Active Proofs</h2>
+        <h2 className="mb-6 text-2xl font-semibold">My Active Proofs</h2>
         <MyProofsTable
           proofs={[
             {

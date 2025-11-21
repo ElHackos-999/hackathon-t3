@@ -26,17 +26,23 @@ interface MyProofsTableProps {
   isRevoking: string | null;
 }
 
-export function MyProofsTable({ proofs, onRevoke, isRevoking }: MyProofsTableProps) {
+export function MyProofsTable({
+  proofs,
+  onRevoke,
+  isRevoking,
+}: MyProofsTableProps) {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     // In a real app, we'd show a toast here
-    alert("Copied to clipboard!"); 
+    alert("Copied to clipboard!");
   };
 
   if (proofs.length === 0) {
     return (
-      <div className="text-center p-8 border rounded-lg bg-muted/10">
-        <p className="text-muted-foreground">You haven't generated any proofs yet.</p>
+      <div className="bg-muted/10 rounded-lg border p-8 text-center">
+        <p className="text-muted-foreground">
+          You haven't generated any proofs yet.
+        </p>
       </div>
     );
   }
@@ -66,7 +72,7 @@ export function MyProofsTable({ proofs, onRevoke, isRevoking }: MyProofsTablePro
                   <span className="text-green-600">Active</span>
                 )}
               </TableCell>
-              <TableCell className="text-right space-x-2">
+              <TableCell className="space-x-2 text-right">
                 <Button
                   variant="outline"
                   size="sm"

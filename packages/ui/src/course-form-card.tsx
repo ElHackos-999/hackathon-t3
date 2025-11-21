@@ -1,11 +1,12 @@
 "use client";
 
 import { ReactNode } from "react";
+
 import { Button } from "./button";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Input } from "./input";
 import { Label } from "./label";
 import { Textarea } from "./textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
 
 interface CourseFormCardProps {
   initialCourse?: {
@@ -32,7 +33,9 @@ export function CourseFormCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{initialCourse ? "Edit Course" : "Create New Course"}</CardTitle>
+        <CardTitle>
+          {initialCourse ? "Edit Course" : "Create New Course"}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form
@@ -97,7 +100,7 @@ export function CourseFormCard({
               min="0"
               required
             />
-            <p className="text-xs text-muted-foreground">0 = no expiry</p>
+            <p className="text-muted-foreground text-xs">0 = no expiry</p>
           </div>
 
           <div className="space-y-2">
@@ -127,7 +130,9 @@ export function CourseFormCard({
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : submitLabel}
             </Button>
-            <Button type="button" variant="outline">Cancel</Button>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
           </div>
         </form>
       </CardContent>

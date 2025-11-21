@@ -1,7 +1,14 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "./card";
 import { Button } from "./button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./card";
 
 interface Course {
   id: string;
@@ -19,42 +26,52 @@ interface PublicCourseListProps {
 export function PublicCourseList({ courses }: PublicCourseListProps) {
   if (courses.length === 0) {
     return (
-      <div className="text-center p-12">
+      <div className="p-12 text-center">
         <h3 className="text-lg font-semibold">No courses available yet</h3>
-        <p className="text-muted-foreground">Check back later for new certifications.</p>
+        <p className="text-muted-foreground">
+          Check back later for new certifications.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {courses.map((course) => (
-        <Card key={course.id} className="flex flex-col h-full hover:shadow-lg transition-shadow">
-          <div className="aspect-video w-full overflow-hidden relative bg-muted">
-            <img 
-              src={course.imageUri} 
+        <Card
+          key={course.id}
+          className="flex h-full flex-col transition-shadow hover:shadow-lg"
+        >
+          <div className="bg-muted relative aspect-video w-full overflow-hidden">
+            <img
+              src={course.imageUri}
               alt={course.courseName}
-              className="object-cover w-full h-full"
+              className="h-full w-full object-cover"
             />
           </div>
           <CardHeader>
-            <div className="flex justify-between items-start">
+            <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="text-xl mb-1">{course.courseName}</CardTitle>
-                <CardDescription className="font-mono text-xs bg-muted px-2 py-1 rounded inline-block">
+                <CardTitle className="mb-1 text-xl">
+                  {course.courseName}
+                </CardTitle>
+                <CardDescription className="bg-muted inline-block rounded px-2 py-1 font-mono text-xs">
                   {course.courseCode}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="flex-grow">
-            <p className="text-sm text-muted-foreground line-clamp-3">
+            <p className="text-muted-foreground line-clamp-3 text-sm">
               {course.description || "No description available."}
             </p>
           </CardContent>
-          <CardFooter className="border-t pt-4 bg-muted/5">
-            <div className="w-full flex justify-between items-center text-xs text-muted-foreground">
-              <span className="font-mono truncate max-w-[150px]" title={course.contractAddress}>
+          <CardFooter className="bg-muted/5 border-t pt-4">
+            <div className="text-muted-foreground flex w-full items-center justify-between text-xs">
+              <span
+                className="max-w-[150px] truncate font-mono"
+                title={course.contractAddress}
+              >
                 {course.contractAddress}
               </span>
               <Button variant="secondary" size="sm" asChild>

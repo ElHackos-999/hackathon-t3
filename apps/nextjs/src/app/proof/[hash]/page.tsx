@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ProofVerificationCard } from "@acme/ui/proof-verification-card";
 import { useParams } from "next/navigation";
+
+import { ProofVerificationCard } from "@acme/ui/proof-verification-card";
 
 export default function ProofPage() {
   const params = useParams();
   const hash = params.hash as string;
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [result, setResult] = useState<any>(null);
 
@@ -16,7 +17,7 @@ export default function ProofPage() {
     const verify = async () => {
       setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      
+
       // Mock result based on hash
       if (hash === "invalid") {
         setResult({
@@ -46,17 +47,20 @@ export default function ProofPage() {
   }, [hash]);
 
   return (
-    <div className="container mx-auto py-12 flex flex-col items-center justify-center min-h-[60vh]">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Certificate Verification</h1>
+    <div className="container mx-auto flex min-h-[60vh] flex-col items-center justify-center py-12">
+      <div className="mb-8 text-center">
+        <h1 className="mb-2 text-3xl font-bold">Certificate Verification</h1>
         <p className="text-muted-foreground">
-          Verifying proof hash: <span className="font-mono bg-muted px-2 py-1 rounded text-sm">{hash}</span>
+          Verifying proof hash:{" "}
+          <span className="bg-muted rounded px-2 py-1 font-mono text-sm">
+            {hash}
+          </span>
         </p>
       </div>
 
-      <ProofVerificationCard 
-        result={result || { valid: false }} 
-        isLoading={isLoading} 
+      <ProofVerificationCard
+        result={result || { valid: false }}
+        isLoading={isLoading}
       />
     </div>
   );

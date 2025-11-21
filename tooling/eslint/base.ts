@@ -54,6 +54,7 @@ export const baseConfig = defineConfig(
     ],
     rules: {
       ...turboPlugin.configs.recommended.rules,
+      "@typescript-eslint/require-await": "off",
       "@typescript-eslint/no-unsafe-assignment": "warn",
       "@typescript-eslint/no-floating-promises": "warn",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
