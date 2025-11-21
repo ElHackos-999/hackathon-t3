@@ -13,9 +13,11 @@ import { cn } from "@acme/ui";
 
 import { Button } from "./button";
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+  footer?: React.ReactNode;
+}
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, footer }: SidebarProps) {
   const pathname = usePathname();
 
   const links = [
@@ -84,6 +86,11 @@ export function Sidebar({ className }: SidebarProps) {
             </Button>
           </div>
         </div>
+        {footer && (
+          <div className="px-3 py-2">
+            <div className="space-y-1">{footer}</div>
+          </div>
+        )}
       </div>
     </div>
   );

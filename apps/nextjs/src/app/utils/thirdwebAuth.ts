@@ -5,12 +5,12 @@ import { client } from "~/app/utils/thirdwebClient";
 import { env } from "~/env";
 
 function getThirdwebAuth() {
-  const secretKey = env.THIRDWEB_SECRET_KEY;
+  const secretKey = env.PRIVATE_KEY;
   const appUrl = env.NEXT_PUBLIC_APP_URL;
 
   if (!secretKey || !appUrl) {
     throw new Error(
-      `Missing required environment variables: THIRDWEB_SECRET_KEY=${!!secretKey}, NEXT_PUBLIC_APP_URL=${!!appUrl}`,
+      `Missing required environment variables: PRIVATE_KEY=${!!secretKey}, NEXT_PUBLIC_APP_URL=${!!appUrl}`,
     );
   }
 

@@ -1,9 +1,14 @@
 "use client";
 
-import type { VerifyLoginPayloadParams } from "thirdweb/auth";
 import { ConnectButton, useActiveWallet } from "thirdweb/react";
 import { inAppWallet } from "thirdweb/wallets";
 
+import {
+  generateLoginPayload,
+  isLoggedIn,
+  login,
+  logout,
+} from "~/app/actions/auth";
 import { client } from "~/app/utils/thirdwebClient";
 
 const wallets = [
@@ -29,7 +34,7 @@ export function ConnectWallet() {
         render: () => (
           <button
             onClick={async () => {
-              await fetch("/api/auth/thirdweb/logout", { method: "POST" });
+              await logout();
               wallet?.disconnect();
             }}
             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium"
@@ -44,27 +49,16 @@ export function ConnectWallet() {
       }}
       auth={{
         getLoginPayload: async ({ address, chainId }) => {
-          const res = await fetch("/api/auth/thirdweb/payload", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ address, chainId }),
-          });
-          return res.json();
+          return generateLoginPayload(address, chainId);
         },
-        doLogin: async (params: VerifyLoginPayloadParams) => {
-          await fetch("/api/auth/thirdweb/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(params),
-          });
+        doLogin: async (params) => {
+          await login(params);
         },
         isLoggedIn: async () => {
-          const res = await fetch("/api/auth/thirdweb/user");
-          const data = await res.json();
-          return !!data.user;
+          return isLoggedIn();
         },
         doLogout: async () => {
-          await fetch("/api/auth/thirdweb/logout", { method: "POST" });
+          await logout();
         },
       }}
       signInButton={{
