@@ -17,7 +17,8 @@
       "Bash(fi)",
       "Bash(gh pr edit:*)",
       "Bash(mkdir:*)",
-      "Bash(pnpm test:*)"
+      "Bash(pnpm test:*)",
+      "Skill(superpowers:brainstorming)"
     ],
     "deny": [],
     "ask": []
