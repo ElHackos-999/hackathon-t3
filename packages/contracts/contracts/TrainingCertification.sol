@@ -124,6 +124,67 @@ contract TrainingCertification is ERC1155, ERC1155Supply, AccessControl {
     }
 
     /**
+     * @notice Mint a certification to a recipient
+     * @param to Address receiving the certification
+     * @param tokenId Course token ID
+     * @param data Additional data for ERC1155 hooks
+     */
+    function mintCertification(
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) external onlyRole(MINTER_ROLE) {
+        require(_courses[tokenId].exists, "Course does not exist");
+        require(to != address(0), "Cannot mint to zero address");
+
+        _mintTimestamps[tokenId][to] = block.timestamp;
+
+        uint256 expiryTimestamp = block.timestamp + _courses[tokenId].validityDuration;
+
+        _mint(to, tokenId, 1, data);
+
+        emit CertificationMinted(to, tokenId, block.timestamp, expiryTimestamp);
+    }
+
+    /**
+     * @notice Mint certifications to multiple recipients
+     * @param recipients Array of addresses receiving certifications
+     * @param tokenId Course token ID
+     * @param data Additional data for ERC1155 hooks
+     */
+    function batchMintCertifications(
+        address[] memory recipients,
+        uint256 tokenId,
+        bytes memory data
+    ) external onlyRole(MINTER_ROLE) {
+        require(recipients.length > 0, "Recipients array cannot be empty");
+        require(_courses[tokenId].exists, "Course does not exist");
+
+        uint256 mintTimestamp = block.timestamp;
+        uint256 expiryTimestamp = mintTimestamp + _courses[tokenId].validityDuration;
+
+        for (uint256 i = 0; i < recipients.length; i++) {
+            address recipient = recipients[i];
+            require(recipient != address(0), "Cannot mint to zero address");
+
+            _mintTimestamps[tokenId][recipient] = mintTimestamp;
+            _mint(recipient, tokenId, 1, data);
+
+            emit CertificationMinted(recipient, tokenId, mintTimestamp, expiryTimestamp);
+        }
+    }
+
+    /**
+     * @notice Get the mint timestamp for a holder's certification
+     * @param tokenId Course token ID
+     * @param holder Address of the certificate holder
+     * @return timestamp When the certification was minted
+     */
+    function getMintTimestamp(uint256 tokenId, address holder) external view returns (uint256) {
+        return _mintTimestamps[tokenId][holder];
+    }
+
+    /**
      * @notice Get course information by token ID
      * @param tokenId The token ID of the course
      * @return course The course data

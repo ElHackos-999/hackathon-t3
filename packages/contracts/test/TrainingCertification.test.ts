@@ -167,4 +167,120 @@ describe("TrainingCertification", function () {
       });
     });
   });
+
+  describe("Minting Certifications", function () {
+    const courseCode = "REACT-101";
+    const courseName = "React Developer Certification";
+    const imageURI = "https://example.com/badges/react-101.png";
+    const validityDuration = 31536000; // 1 year
+
+    beforeEach(async function () {
+      await contract.createCourse(courseCode, courseName, imageURI, validityDuration);
+    });
+
+    describe("mintCertification", function () {
+      it("Should mint certification to student", async function () {
+        const tx = await contract.connect(minter).mintCertification(
+          student.address,
+          1,
+          "0x"
+        );
+
+        const receipt = await tx.wait();
+        const block = await ethers.provider.getBlock(receipt!.blockNumber);
+        const mintTimestamp = block!.timestamp;
+        const expiryTimestamp = mintTimestamp + validityDuration;
+
+        await expect(tx)
+          .to.emit(contract, "CertificationMinted")
+          .withArgs(student.address, 1, mintTimestamp, expiryTimestamp);
+
+        expect(await contract.balanceOf(student.address, 1)).to.equal(1);
+      });
+
+      it("Should record mint timestamp", async function () {
+        await contract.connect(minter).mintCertification(student.address, 1, "0x");
+
+        const mintTimestamp = await contract.getMintTimestamp(1, student.address);
+        expect(mintTimestamp).to.be.greaterThan(0);
+      });
+
+      it("Should update timestamp on re-certification", async function () {
+        await contract.connect(minter).mintCertification(student.address, 1, "0x");
+        const firstMint = await contract.getMintTimestamp(1, student.address);
+
+        // Wait 1 second
+        await ethers.provider.send("evm_increaseTime", [1]);
+        await ethers.provider.send("evm_mine", []);
+
+        await contract.connect(minter).mintCertification(student.address, 1, "0x");
+        const secondMint = await contract.getMintTimestamp(1, student.address);
+
+        expect(secondMint).to.be.greaterThan(firstMint);
+        expect(await contract.balanceOf(student.address, 1)).to.equal(2);
+      });
+
+      it("Should reject minting non-existent course", async function () {
+        await expect(
+          contract.connect(minter).mintCertification(student.address, 999, "0x")
+        ).to.be.revertedWith("Course does not exist");
+      });
+
+      it("Should reject minting to zero address", async function () {
+        await expect(
+          contract.connect(minter).mintCertification(ethers.ZeroAddress, 1, "0x")
+        ).to.be.revertedWith("Cannot mint to zero address");
+      });
+
+      it("Should only allow minter role to mint", async function () {
+        await expect(
+          contract.connect(unauthorized).mintCertification(student.address, 1, "0x")
+        ).to.be.reverted;
+      });
+    });
+
+    describe("batchMintCertifications", function () {
+      it("Should mint certifications to multiple recipients", async function () {
+        const recipients = [student.address, unauthorized.address];
+
+        await contract.connect(minter).batchMintCertifications(recipients, 1, "0x");
+
+        expect(await contract.balanceOf(student.address, 1)).to.equal(1);
+        expect(await contract.balanceOf(unauthorized.address, 1)).to.equal(1);
+
+        const studentTimestamp = await contract.getMintTimestamp(1, student.address);
+        const unauthorizedTimestamp = await contract.getMintTimestamp(1, unauthorized.address);
+
+        expect(studentTimestamp).to.be.greaterThan(0);
+        expect(unauthorizedTimestamp).to.be.greaterThan(0);
+      });
+
+      it("Should emit event for each recipient", async function () {
+        const recipients = [student.address, unauthorized.address];
+
+        const tx = await contract.connect(minter).batchMintCertifications(recipients, 1, "0x");
+
+        await expect(tx)
+          .to.emit(contract, "CertificationMinted");
+      });
+
+      it("Should reject empty recipients array", async function () {
+        await expect(
+          contract.connect(minter).batchMintCertifications([], 1, "0x")
+        ).to.be.revertedWith("Recipients array cannot be empty");
+      });
+
+      it("Should reject non-existent course", async function () {
+        await expect(
+          contract.connect(minter).batchMintCertifications([student.address], 999, "0x")
+        ).to.be.revertedWith("Course does not exist");
+      });
+
+      it("Should only allow minter role", async function () {
+        await expect(
+          contract.connect(unauthorized).batchMintCertifications([student.address], 1, "0x")
+        ).to.be.reverted;
+      });
+    });
+  });
 });
