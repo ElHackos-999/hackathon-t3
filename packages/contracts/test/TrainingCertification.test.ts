@@ -112,5 +112,59 @@ describe("TrainingCertification", function () {
         ).to.be.reverted; // AccessControl revert
       });
     });
+
+    describe("updateCourse", function () {
+      beforeEach(async function () {
+        await contract.createCourse(courseCode, courseName, imageURI, validityDuration);
+      });
+
+      it("Should update course metadata", async function () {
+        const newName = "Advanced React Certification";
+        const newImageURI = "https://example.com/badges/react-advanced.png";
+        const newDuration = 63072000; // 2 years
+
+        const tx = await contract.updateCourse(1, newName, newImageURI, newDuration);
+
+        await expect(tx)
+          .to.emit(contract, "CourseUpdated")
+          .withArgs(1, newName, newImageURI, newDuration);
+
+        const course = await contract.getCourse(1);
+        expect(course.courseCode).to.equal(courseCode); // Code unchanged
+        expect(course.courseName).to.equal(newName);
+        expect(course.imageURI).to.equal(newImageURI);
+        expect(course.validityDuration).to.equal(newDuration);
+      });
+
+      it("Should reject updating non-existent course", async function () {
+        await expect(
+          contract.updateCourse(999, courseName, imageURI, validityDuration)
+        ).to.be.revertedWith("Course does not exist");
+      });
+
+      it("Should reject empty course name", async function () {
+        await expect(
+          contract.updateCourse(1, "", imageURI, validityDuration)
+        ).to.be.revertedWith("Course name cannot be empty");
+      });
+
+      it("Should reject empty image URI", async function () {
+        await expect(
+          contract.updateCourse(1, courseName, "", validityDuration)
+        ).to.be.revertedWith("Image URI cannot be empty");
+      });
+
+      it("Should reject zero validity duration", async function () {
+        await expect(
+          contract.updateCourse(1, courseName, imageURI, 0)
+        ).to.be.revertedWith("Validity duration must be greater than zero");
+      });
+
+      it("Should only allow admin to update courses", async function () {
+        await expect(
+          contract.connect(unauthorized).updateCourse(1, "New Name", imageURI, validityDuration)
+        ).to.be.reverted;
+      });
+    });
   });
 });

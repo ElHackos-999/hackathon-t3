@@ -98,6 +98,32 @@ contract TrainingCertification is ERC1155, ERC1155Supply, AccessControl {
     }
 
     /**
+     * @notice Update existing course metadata
+     * @dev Cannot update course code (immutable for mapping integrity)
+     * @param tokenId The token ID of the course to update
+     * @param courseName New course name
+     * @param imageURI New image URI
+     * @param validityDuration New validity duration
+     */
+    function updateCourse(
+        uint256 tokenId,
+        string memory courseName,
+        string memory imageURI,
+        uint256 validityDuration
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_courses[tokenId].exists, "Course does not exist");
+        require(bytes(courseName).length > 0, "Course name cannot be empty");
+        require(bytes(imageURI).length > 0, "Image URI cannot be empty");
+        require(validityDuration > 0, "Validity duration must be greater than zero");
+
+        _courses[tokenId].courseName = courseName;
+        _courses[tokenId].imageURI = imageURI;
+        _courses[tokenId].validityDuration = validityDuration;
+
+        emit CourseUpdated(tokenId, courseName, imageURI, validityDuration);
+    }
+
+    /**
      * @notice Get course information by token ID
      * @param tokenId The token ID of the course
      * @return course The course data
