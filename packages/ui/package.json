@@ -4,12 +4,23 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./admin-mint-certificate-card": "./src/admin-mint-certificate-card.tsx",
     "./button": "./src/button.tsx",
+    "./card": "./src/card.tsx",
+    "./completed-courses-grid": "./src/completed-courses-grid.tsx",
+    "./course-form-card": "./src/course-form-card.tsx",
     "./dropdown-menu": "./src/dropdown-menu.tsx",
     "./field": "./src/field.tsx",
     "./input": "./src/input.tsx",
     "./label": "./src/label.tsx",
+    "./my-proofs-table": "./src/my-proofs-table.tsx",
+    "./proof-verification-card": "./src/proof-verification-card.tsx",
+    "./public-course-list": "./src/public-course-list.tsx",
+    "./select": "./src/select.tsx",
     "./separator": "./src/separator.tsx",
+    "./sidebar": "./src/sidebar.tsx",
+    "./table": "./src/table.tsx",
+    "./textarea": "./src/textarea.tsx",
     "./theme": "./src/theme.tsx",
     "./toast": "./src/toast.tsx"
   },
@@ -23,7 +34,9 @@
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",
+    "@radix-ui/react-select": "^2.0.0",
     "class-variance-authority": "^0.7.1",
+    "lucide-react": "^0.330.0",
     "radix-ui": "^1.4.3",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1"
