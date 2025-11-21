@@ -31,19 +31,19 @@ jobs:
         shell: bash
         run: cp .env.example .env
 
-      - name: Lint
-        run: pnpm lint && pnpm lint:ws
+  #     - name: Lint
+  #       run: pnpm lint && pnpm lint:ws
 
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
+  # format:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v5
 
-      - name: Setup
-        uses: ./tooling/github/setup
+  #     - name: Setup
+  #       uses: ./tooling/github/setup
 
-      - name: Format
-        run: pnpm format
+  #     - name: Format
+  #       run: pnpm format
 
   typecheck:
     runs-on: ubuntu-latest

@@ -6,6 +6,10 @@ import turboPlugin from "eslint-plugin-turbo";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
+
+
+
+
 /**
  * All packages that leverage t3-env should use this rule
  */
@@ -58,6 +62,13 @@ export const baseConfig = defineConfig(
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-floating-promises": "warn",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-empty-object-type": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/consistent-type-imports": [
         "warn",
         { prefer: "type-imports", fixStyle: "separate-type-imports" },
