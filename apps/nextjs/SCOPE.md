@@ -31,6 +31,7 @@
 - As an **admin**, I can view a list of previously minted completions so I can track which users hold which certificates.
 
 **Acceptance Criteria:**
+
 - Only users with `role: "admin"` in Better Auth can access `/admin`.
 - Create/edit course forms persist to `courses` table via tRPC.
 - Minting flow: select user → select course → call `nft.mintCompletion` → on-chain mint + DB record created.
@@ -46,6 +47,7 @@
 - As an **authenticated user**, I can manage my proofs (list, copy link, revoke) so I control which verifications remain valid.
 
 **Acceptance Criteria:**
+
 - Login redirects to `/dashboard/courses` (or login page if not authenticated).
 - Dashboard shows all `courseCompletions` where `userId = current user`.
 - Each completion card has "Generate proof" button → creates row in `proofs` table.
@@ -61,6 +63,7 @@
 - As **any visitor**, I can open a shared proof link (`/proof/[hash]`) and verify its validity so I can trust claims of completion.
 
 **Acceptance Criteria:**
+
 - `/courses` is public and lists all courses without authentication.
 - `/courses/[courseCode]` shows metadata, image, and on-chain contract/tokenId info.
 - `/proof/[hash]` is public; shows "Verified ✓" if proof is valid (not revoked, not expired), includes course name + user pseudonym + date.
@@ -73,72 +76,102 @@
 ### Drizzle ORM Schema (`packages/db/src/schema/courses.ts`)
 
 ```ts
-import {
-  pgTable, uuid, text, timestamp, integer, boolean, index,
-} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import {
+  boolean,
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
+
 import { user } from "./auth-schema"; // from Better Auth
 
 // Courses table – metadata for each NFT type
-export const courses = pgTable("courses", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  courseCode: text("course_code").notNull().unique(),
-  courseName: text("course_name").notNull(),
-  description: text("description"),
-  imageUri: text("image_uri").notNull(), // IPFS or HTTPS URL for NFT image
-  defaultExpiryDays: integer("default_expiry_days").default(0).notNull(), // 0 = no expiry
-  tokenId: integer("token_id").notNull().unique(), // ERC-1155 tokenId on contract
-  contractAddress: text("contract_address").notNull(), // ERC-1155 contract address
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => ({
-  codeIdx: index("courses_code_idx").on(table.courseCode),
-}));
+export const courses = pgTable(
+  "courses",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    courseCode: text("course_code").notNull().unique(),
+    courseName: text("course_name").notNull(),
+    description: text("description"),
+    imageUri: text("image_uri").notNull(), // IPFS or HTTPS URL for NFT image
+    defaultExpiryDays: integer("default_expiry_days").default(0).notNull(), // 0 = no expiry
+    tokenId: integer("token_id").notNull().unique(), // ERC-1155 tokenId on contract
+    contractAddress: text("contract_address").notNull(), // ERC-1155 contract address
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    codeIdx: index("courses_code_idx").on(table.courseCode),
+  }),
+);
 
 // Course completions – tracks which users have which NFTs
-export const courseCompletions = pgTable("course_completions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
-  courseId: uuid("course_id").notNull().references(() => courses.id, { onDelete: "cascade" }),
-  walletAddress: text("wallet_address").notNull(), // user's wallet that holds the NFT
-  tokenId: integer("token_id").notNull(), // redundant for query speed
-  completionDate: timestamp("completion_date").defaultNow().notNull(),
-  expiryDate: timestamp("expiry_date"), // null = no expiry
-  txHash: text("tx_hash").notNull(), // on-chain transaction hash
-}, (table) => ({
-  userCourseIdx: index("user_course_idx").on(table.userId, table.courseId),
-  walletIdx: index("wallet_idx").on(table.walletAddress),
-}));
+export const courseCompletions = pgTable(
+  "course_completions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => courses.id, { onDelete: "cascade" }),
+    walletAddress: text("wallet_address").notNull(), // user's wallet that holds the NFT
+    tokenId: integer("token_id").notNull(), // redundant for query speed
+    completionDate: timestamp("completion_date").defaultNow().notNull(),
+    expiryDate: timestamp("expiry_date"), // null = no expiry
+    txHash: text("tx_hash").notNull(), // on-chain transaction hash
+  },
+  (table) => ({
+    userCourseIdx: index("user_course_idx").on(table.userId, table.courseId),
+    walletIdx: index("wallet_idx").on(table.walletAddress),
+  }),
+);
 
 // Proofs – user-generated proof tokens for sharing
-export const proofs = pgTable("proofs", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  proofHash: text("proof_hash").notNull().unique(), // unique proof identifier
-  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
-  courseId: uuid("course_id").notNull().references(() => courses.id),
-  tokenId: integer("token_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  expiresAt: timestamp("expires_at"), // optional: proof validity window
-  isRevoked: boolean("is_revoked").default(false).notNull(),
-}, (table) => ({
-  proofIdx: index("proof_hash_idx").on(table.proofHash),
-}));
+export const proofs = pgTable(
+  "proofs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    proofHash: text("proof_hash").notNull().unique(), // unique proof identifier
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => courses.id),
+    tokenId: integer("token_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    expiresAt: timestamp("expires_at"), // optional: proof validity window
+    isRevoked: boolean("is_revoked").default(false).notNull(),
+  },
+  (table) => ({
+    proofIdx: index("proof_hash_idx").on(table.proofHash),
+  }),
+);
 
 // Relations for convenient queries
 export const coursesRelations = relations(courses, ({ many }) => ({
   completions: many(courseCompletions),
 }));
 
-export const courseCompletionsRelations = relations(courseCompletions, ({ one }) => ({
-  course: one(courses, {
-    fields: [courseCompletions.courseId],
-    references: [courses.id],
+export const courseCompletionsRelations = relations(
+  courseCompletions,
+  ({ one }) => ({
+    course: one(courses, {
+      fields: [courseCompletions.courseId],
+      references: [courses.id],
+    }),
+    user: one(user, {
+      fields: [courseCompletions.userId],
+      references: [user.id],
+    }),
   }),
-  user: one(user, {
-    fields: [courseCompletions.userId],
-    references: [user.id],
-  }),
-}));
+);
 
 export const proofsRelations = relations(proofs, ({ one }) => ({
   course: one(courses, {
@@ -153,6 +186,7 @@ export const proofsRelations = relations(proofs, ({ one }) => ({
 ```
 
 **Update barrel export:**
+
 ```ts
 // packages/db/src/schema/index.ts
 export * from "./auth-schema";
@@ -160,6 +194,7 @@ export * from "./courses";
 ```
 
 **Apply migration:**
+
 ```bash
 pnpm db:push
 ```
@@ -255,10 +290,12 @@ pnpm db:push
 Located in `packages/api/src/router/course.ts`:
 
 ```ts
+import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
+
+import { courseCompletions, courses } from "@acme/db/schema";
+
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { courses, courseCompletions } from "@acme/db/schema";
-import { eq, desc } from "drizzle-orm";
 
 export const courseRouter = createTRPCRouter({
   // Public: List all courses
@@ -279,33 +316,34 @@ export const courseRouter = createTRPCRouter({
 
   // Admin: Create course
   createCourse: protectedProcedure
-    .input(z.object({
-      courseCode: z.string().min(1),
-      courseName: z.string().min(1),
-      description: z.string().optional(),
-      imageUri: z.string().url(),
-      defaultExpiryDays: z.number().int().min(0).default(0),
-      tokenId: z.number().int().positive(),
-      contractAddress: z.string().regex(/^0x[0-9a-fA-F]{40}$/),
-    }))
+    .input(
+      z.object({
+        courseCode: z.string().min(1),
+        courseName: z.string().min(1),
+        description: z.string().optional(),
+        imageUri: z.string().url(),
+        defaultExpiryDays: z.number().int().min(0).default(0),
+        tokenId: z.number().int().positive(),
+        contractAddress: z.string().regex(/^0x[0-9a-fA-F]{40}$/),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // TODO: Check if admin; throw if not
-      const [course] = await ctx.db
-        .insert(courses)
-        .values(input)
-        .returning();
+      const [course] = await ctx.db.insert(courses).values(input).returning();
       return course;
     }),
 
   // Admin: Update course
   updateCourse: protectedProcedure
-    .input(z.object({
-      id: z.string().uuid(),
-      courseName: z.string().optional(),
-      description: z.string().optional(),
-      imageUri: z.string().url().optional(),
-      defaultExpiryDays: z.number().int().min(0).optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        courseName: z.string().optional(),
+        description: z.string().optional(),
+        imageUri: z.string().url().optional(),
+        defaultExpiryDays: z.number().int().min(0).optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
       // TODO: Check if admin
@@ -324,11 +362,13 @@ export const courseRouter = createTRPCRouter({
 Located in `packages/api/src/router/nft.ts`:
 
 ```ts
-import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { courses, courseCompletions } from "@acme/db/schema";
-import { eq, and, desc } from "drizzle-orm";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { and, desc, eq } from "drizzle-orm";
+import { z } from "zod";
+
+import { courseCompletions, courses } from "@acme/db/schema";
+
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 const sdk = new ThirdwebSDK("mumbai", {
   secretKey: process.env.THIRDWEB_SECRET_KEY,
@@ -337,13 +377,15 @@ const sdk = new ThirdwebSDK("mumbai", {
 export const nftRouter = createTRPCRouter({
   // Admin: Mint completion to user
   mintCompletion: protectedProcedure
-    .input(z.object({
-      userEmail: z.string().email(),
-      courseCode: z.string(),
-    }))
+    .input(
+      z.object({
+        userEmail: z.string().email(),
+        courseCode: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // TODO: Check if admin
-      
+
       // 1. Find user by email
       const targetUser = await ctx.db.query.user.findFirst({
         where: (users, { eq }) => eq(users.email, input.userEmail),
@@ -372,7 +414,9 @@ export const nftRouter = createTRPCRouter({
       const walletAddress = walletAccount.providerAccountId; // depends on account type
 
       // 5. Mint via thirdweb SDK
-      const contract = await sdk.getContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!);
+      const contract = await sdk.getContract(
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
+      );
       const tx = await contract.call("mintCompletion", [
         walletAddress,
         course.courseName,
@@ -381,9 +425,13 @@ export const nftRouter = createTRPCRouter({
 
       // 6. Calculate expiry
       const completionDate = new Date();
-      const expiryDate = course.defaultExpiryDays > 0
-        ? new Date(completionDate.getTime() + course.defaultExpiryDays * 24 * 60 * 60 * 1000)
-        : null;
+      const expiryDate =
+        course.defaultExpiryDays > 0
+          ? new Date(
+              completionDate.getTime() +
+                course.defaultExpiryDays * 24 * 60 * 60 * 1000,
+            )
+          : null;
 
       // 7. Save completion record
       const [completion] = await ctx.db
@@ -430,11 +478,13 @@ export const nftRouter = createTRPCRouter({
 Located in `packages/api/src/router/proof.ts`:
 
 ```ts
-import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { proofs, courseCompletions, courses } from "@acme/db/schema";
-import { eq, and, desc } from "drizzle-orm";
 import crypto from "crypto";
+import { and, desc, eq } from "drizzle-orm";
+import { z } from "zod";
+
+import { courseCompletions, courses, proofs } from "@acme/db/schema";
+
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const proofRouter = createTRPCRouter({
   // Protected: Generate proof for a completion
@@ -454,7 +504,9 @@ export const proofRouter = createTRPCRouter({
       // 2. Generate proof hash
       const proofHash = crypto
         .createHash("sha256")
-        .update(`${ctx.session!.user.id}-${completion.tokenId}-${Date.now()}-${Math.random()}`)
+        .update(
+          `${ctx.session!.user.id}-${completion.tokenId}-${Date.now()}-${Math.random()}`,
+        )
         .digest("hex");
 
       // 3. Save proof record (30-day expiry by default)
@@ -549,10 +601,10 @@ export const proofRouter = createTRPCRouter({
 Update `packages/api/src/root.ts`:
 
 ```ts
-import { createTRPCRouter } from "./trpc";
 import { courseRouter } from "./router/course";
 import { nftRouter } from "./router/nft";
 import { proofRouter } from "./router/proof";
+import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   course: courseRouter,
@@ -1272,7 +1324,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CourseNFT is ERC1155, Ownable {
   uint256 public nextTokenId;
-  
+
   mapping(uint256 => string) public tokenURIs;
   mapping(uint256 => string) public courseNames;
 
@@ -1300,6 +1352,7 @@ contract CourseNFT is ERC1155, Ownable {
 ```
 
 **Deploy via Thirdweb Dashboard or CLI:**
+
 ```bash
 npx thirdweb deploy
 # Follow prompts, deploy to Mumbai/Amoy testnet
@@ -1313,6 +1366,7 @@ npx thirdweb deploy
 ### Hour 0–1: Setup & Schema
 
 **All Team:**
+
 - [ ] Clone repo; install deps: `pnpm install`
 - [ ] Copy `.env.example` → `.env.local`
 - [ ] Run `pnpm --filter @acme/auth generate` (Better Auth schema)
@@ -1320,11 +1374,13 @@ npx thirdweb deploy
 - [ ] Run `pnpm db:push` to sync schema to Postgres
 
 **Developer 1:**
+
 - [ ] Prepare smart contract (use thirdweb template or deploy test version)
 
 ### Hour 1–3: tRPC Routers & Backend
 
 **Developer 2:**
+
 - [ ] Create `packages/api/src/router/course.ts` with all course procedures
 - [ ] Create `packages/api/src/router/nft.ts` with mintCompletion + getMyCompletions
 - [ ] Create `packages/api/src/router/proof.ts` with generateProof + verifyProof
@@ -1332,6 +1388,7 @@ npx thirdweb deploy
 - [ ] Test locally: `pnpm dev` and navigate to tRPC API docs
 
 **Developer 1:**
+
 - [ ] Deploy contract to testnet
 - [ ] Fill in `NEXT_PUBLIC_CONTRACT_ADDRESS` in `.env.local`
 - [ ] Test thirdweb SDK setup locally
@@ -1339,6 +1396,7 @@ npx thirdweb deploy
 ### Hour 3–5: UI Components & Admin Page
 
 **Developer 3:**
+
 - [ ] Add to `packages/ui/src`:
   - `course-form-card.tsx`
   - `admin-mint-certificate-card.tsx`
@@ -1348,11 +1406,13 @@ npx thirdweb deploy
 - [ ] Build admin page: `apps/nextjs/src/app/admin/page.tsx`
 
 **Developer 1 & 2:**
+
 - [ ] Review + test components locally
 
 ### Hour 5–7: User Dashboard & Public Pages
 
 **Developer 3:**
+
 - [ ] Build `apps/nextjs/src/app/dashboard/courses/page.tsx`
 - [ ] Build `apps/nextjs/src/app/courses/page.tsx` (public list)
 - [ ] Build `apps/nextjs/src/app/courses/[courseCode]/page.tsx` (course detail)
@@ -1362,6 +1422,7 @@ npx thirdweb deploy
 ### Hour 7–9: Integration & Testing
 
 **All Team:**
+
 - [ ] End-to-end flow test:
   1. Admin creates course (DB + form)
   2. Admin mints to user (tRPC + blockchain)
@@ -1374,6 +1435,7 @@ npx thirdweb deploy
 ### Hour 9–10: Polish & Deployment Prep
 
 **All Team:**
+
 - [ ] Add loading states + error handling
 - [ ] Add toast notifications for feedback
 - [ ] Test responsiveness (shadcn + Tailwind 4 defaults should cover this)
@@ -1382,6 +1444,7 @@ npx thirdweb deploy
 ### Hour 10–11: Deployment
 
 **Developer 2:**
+
 - [ ] Deploy to Vercel:
   ```bash
   pnpm install -g vercel
@@ -1393,6 +1456,7 @@ npx thirdweb deploy
 ### Hour 11–12: Demo Prep & Presentation
 
 **All Team:**
+
 - [ ] Record or prepare 2-minute demo script
 - [ ] Practice walkthrough:
   1. Show course list (public)
@@ -1549,6 +1613,7 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
    - All vars from `.env.local` (with `NEXT_PUBLIC_` vars visible in browser)
 
 3. **Deploy:**
+
    ```bash
    vercel --prod
    ```
@@ -1560,13 +1625,13 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 ### Quick Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| `Cannot find module @acme/db` | Run `pnpm install` in root |
-| `DATABASE_URL not set` | Ensure `.env.local` is in root, not just `apps/nextjs` |
-| `tRPC router not found` | Check `packages/api/src/root.ts` exports all routers |
+| Issue                             | Solution                                                            |
+| --------------------------------- | ------------------------------------------------------------------- |
+| `Cannot find module @acme/db`     | Run `pnpm install` in root                                          |
+| `DATABASE_URL not set`            | Ensure `.env.local` is in root, not just `apps/nextjs`              |
+| `tRPC router not found`           | Check `packages/api/src/root.ts` exports all routers                |
 | `Mint fails: contract call error` | Check contract address + admin private key in `THIRDWEB_SECRET_KEY` |
-| `Proof not verifying` | Ensure `proofs` table is populated; check `isRevoked` status |
+| `Proof not verifying`             | Ensure `proofs` table is populated; check `isRevoked` status        |
 
 ---
 
