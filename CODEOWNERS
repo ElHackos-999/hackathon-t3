@@ -1,0 +1,63 @@
+# CODEOWNERS
+#
+# Ownership rules for this monorepo. GitHub uses the LAST matching pattern.
+# Order patterns broad -> specific so that specific paths override earlier globs.
+#
+# NOTE: You cannot assign an entire org as a code owner (e.g. @ElHackos-999 is invalid).
+# To include "anyone from the org" create a team (e.g. @ElHackos-999/core) and add all members.
+# For now we list explicit individual owners. Replace / extend with teams when they exist.
+#
+# Core maintainers:
+#   @simon-tanna
+#   @BenDavies1218
+#   @marco-labrys
+#
+# Team naming suggestions (create these before swapping them in):
+#   @ElHackos-999/core        -> broad fallback
+#   @ElHackos-999/app         -> application (apps/nextjs)
+#   @ElHackos-999/platform    -> build + tooling + generators
+#   @ElHackos-999/frontend    -> UI components, validators, styling
+#   @ElHackos-999/backend     -> api/auth/db packages
+#   @ElHackos-999/data        -> database schema & migrations
+#   @ElHackos-999/docs        -> documentation
+#
+# Fallback: everything not matched later.
+* @simon-tanna @BenDavies1218 @marco-labrys
+
+# Root configuration & meta files
+/package.json      @simon-tanna @BenDavies1218 @marco-labrys
+/pnpm-workspace.yaml @simon-tanna @BenDavies1218 @marco-labrys
+/turbo.json        @simon-tanna @BenDavies1218 @marco-labrys
+/README.md         @simon-tanna @BenDavies1218 @marco-labrys
+/CLAUDE.md         @simon-tanna @BenDavies1218 @marco-labrys
+/LICENSE           @simon-tanna @BenDavies1218 @marco-labrys
+
+# Applications
+/apps/             @simon-tanna @BenDavies1218 @marco-labrys
+/apps/nextjs/      @simon-tanna @BenDavies1218 @marco-labrys
+
+# Packages (shared libraries)
+/packages/api/         @simon-tanna @BenDavies1218 @marco-labrys
+/packages/auth/        @simon-tanna @BenDavies1218 @marco-labrys
+/packages/db/          @simon-tanna @BenDavies1218 @marco-labrys
+/packages/ui/          @simon-tanna @BenDavies1218 @marco-labrys
+/packages/validators/  @simon-tanna @BenDavies1218 @marco-labrys
+
+# Tooling infrastructure
+/tooling/eslint/     @simon-tanna @BenDavies1218 @marco-labrys
+/tooling/prettier/   @simon-tanna @BenDavies1218 @marco-labrys
+/tooling/tailwind/   @simon-tanna @BenDavies1218 @marco-labrys
+/tooling/typescript/ @simon-tanna @BenDavies1218 @marco-labrys
+/tooling/vitest/     @simon-tanna @BenDavies1218 @marco-labrys
+/tooling/github/     @simon-tanna @BenDavies1218 @marco-labrys
+
+# Documentation
+/docs/              @simon-tanna @BenDavies1218 @marco-labrys
+
+# Turbo generators & templates
+/turbo/             @simon-tanna @BenDavies1218 @marco-labrys
+
+# Example of a more specific override (kept near end for visibility)
+# /packages/db/src/schema.ts  @simon-tanna @BenDavies1218 @marco-labrys
+
+# To refine in future: replace repeated owners with appropriate teams once created.
