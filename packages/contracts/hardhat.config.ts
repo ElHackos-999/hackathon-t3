@@ -3,11 +3,8 @@ import { HardhatUserConfig, task, types } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "dotenv/config";
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-
-if (!PRIVATE_KEY) throw new Error("Missing private key");
-if (!ALCHEMY_API_KEY) throw new Error("Missing Alchemy API key");
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000000";
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "";
 
 const config: HardhatUserConfig = {
   solidity: {
