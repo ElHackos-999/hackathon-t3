@@ -78,11 +78,7 @@ describe("createPost", () => {
   });
 
   it("Should create a post using makeTestCaller", async () => {
-    const caller = makeTestCaller({
-      session: {
-        user: { id: "user-123" },
-      } as any,
-    });
+    const caller = makeTestCaller();
 
     await caller.post.create({ title: "New Post", content: "New Content" });
 
@@ -99,11 +95,7 @@ describe("createPost", () => {
     };
     await db.insert(Post).values(testPost);
 
-    const caller = makeTestCaller({
-      session: {
-        user: { id: "user-123" },
-      } as any,
-    });
+    const caller = makeTestCaller();
 
     await caller.post.delete(testPost.id);
 

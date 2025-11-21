@@ -19,8 +19,6 @@ export const makeTestCaller = (
 
   return createCaller({
     db,
-    authApi: { getSession: () => null } as any,
-    session: null,
     ...opts,
   });
 };
