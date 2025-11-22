@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import { Button } from "@acme/ui/button";
 import { Field, FieldError, FieldGroup } from "@acme/ui/field";
@@ -14,6 +15,8 @@ export function CreateCourseForm() {
     success: boolean;
     message: string;
   } | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   async function handleSubmit(formData: FormData) {
     setIsSubmitting(true);
@@ -23,21 +26,30 @@ export function CreateCourseForm() {
       // Extract form data
       const courseCode = formData.get("courseCode") as string;
       const courseName = formData.get("courseName") as string;
-      const imageURI = formData.get("imageURI") as string;
       const validityDurationDays = formData.get(
         "validityDurationDays",
       ) as string;
 
+      // Validate file is selected
+      if (!selectedFile) {
+        setResult({
+          success: false,
+          message: "Please select an image file",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Convert days to seconds (BigInt)
       const validityDuration = BigInt(Number(validityDurationDays) * 86400);
 
-      // Call server action
-      const response = await createCourse({
+      // Call server action with file
+      const response = await createCourse(
         courseCode,
         courseName,
-        imageURI,
+        selectedFile,
         validityDuration,
-      });
+      );
 
       if (response.success) {
         setResult({
@@ -45,11 +57,18 @@ export function CreateCourseForm() {
           message: `Course created successfully! Token ID: ${response.data.tokenId.toString()}, Transaction: ${response.data.transactionHash}`,
         });
 
-        // Reset form
+        // Reset form and file state
         const form = document.getElementById(
           "create-course-form",
         ) as HTMLFormElement;
         form?.reset();
+        setSelectedFile(null);
+        setPreviewUrl(null);
+
+        // Clean up preview URL
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+        }
       } else {
         setResult({
           success: false,
@@ -66,6 +85,30 @@ export function CreateCourseForm() {
       setIsSubmitting(false);
     }
   }
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      setSelectedFile(file);
+
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    }
+  }
+
+  // Cleanup preview URL on unmount
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
     <form
@@ -109,16 +152,30 @@ export function CreateCourseForm() {
         </Field>
 
         <Field>
-          <Label htmlFor="imageURI">Image URI</Label>
+          <Label htmlFor="imageFile">Course Badge Image</Label>
           <Input
-            id="imageURI"
-            name="imageURI"
-            type="url"
-            placeholder="https://example.com/image.png"
+            id="imageFile"
+            name="imageFile"
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/svg+xml"
             required
+            onChange={handleFileChange}
             disabled={isSubmitting}
           />
-          <FieldError>Must be a valid URL</FieldError>
+          <FieldError>
+            Image required (JPEG, PNG, GIF, or SVG, max 5MB)
+          </FieldError>
+
+          {previewUrl && (
+            <div className="mt-2">
+              <p className="text-sm text-muted-foreground mb-2">Preview:</p>
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="h-32 w-32 rounded-lg border object-cover"
+              />
+            </div>
+          )}
         </Field>
 
         <Field>
