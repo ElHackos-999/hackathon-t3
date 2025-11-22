@@ -23,7 +23,18 @@
       "Bash(pnpm turbo typecheck:*)",
       "Bash(pnpm -F @acme/nextjs typecheck:*)",
       "Bash(pnpm -F @acme/api build:*)",
-      "Bash(pnpm -F @acme/nextjs build:*)"
+      "Bash(pnpm -F @acme/nextjs build:*)",
+      "SlashCommand(/superpowers:write-plan)",
+      "Skill(superpowers:writing-plans)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm coverage:*)",
+      "Bash(pnpm --filter @acme/contracts test:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.etherscan.io)",
+      "WebFetch(domain:hardhat.org)",
+      "WebFetch(domain:docs.base.org)",
+      "Bash(npx hardhat verify --list-networks)"
     ],
     "deny": [],
     "ask": []

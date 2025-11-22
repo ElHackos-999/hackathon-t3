@@ -9,6 +9,9 @@
       "dependsOn": ["^build"],
       "outputs": [".cache/tsbuildinfo.json", "dist/**"]
     },
+    "@acme/contracts#build": {
+      "outputs": ["artifacts/**", "cache/**", "typechain-types/**"]
+    },
     "dev": {
       "dependsOn": ["^dev"],
       "cache": false,
