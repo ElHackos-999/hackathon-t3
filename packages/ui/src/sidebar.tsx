@@ -36,6 +36,11 @@ export function Sidebar({ className, footer }: SidebarProps) {
       href: "/admin",
       icon: Settings,
     },
+    {
+      name: "Test Auth Page",
+      href: "/test",
+      icon: Settings,
+    },
   ];
 
   return (
@@ -76,7 +81,7 @@ export function Sidebar({ className, footer }: SidebarProps) {
           <div className="space-y-1">
             <Button
               variant={pathname?.startsWith("/proof") ? "secondary" : "ghost"}
-              className="w-full justify-start"
+              className="w-full cursor-pointer justify-start"
               asChild
             >
               <Link href="/proof/verify">

@@ -17,7 +17,7 @@ export function SignOutButton() {
   return (
     <Button
       variant="ghost"
-      className="w-full justify-start"
+      className="w-full cursor-pointer justify-start"
       onClick={handleSignOut}
     >
       Sign Out
