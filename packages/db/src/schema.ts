@@ -28,3 +28,33 @@ export const CreateUserSchema = createInsertSchema(User, {
   createdAt: true,
   updatedAt: true,
 });
+
+// Course table
+export const Course = pgTable("course", (t) => ({
+  id: t.uuid().notNull().primaryKey().defaultRandom(),
+  name: t.text().notNull(),
+  description: t.text().notNull(),
+  courseCode: t.text().notNull().unique(),
+  imageUrl: t.text().notNull(),
+  cost: t.numeric({ precision: 10, scale: 2 }).notNull(),
+  avgCompletionMinutes: t.integer().notNull(),
+  validityMonths: t.integer().notNull(),
+  tags: t.text().array().notNull(),
+  tokenId: t.integer().notNull().unique(),
+  createdAt: t.timestamp().defaultNow().notNull(),
+}));
+
+export const CreateCourseSchema = createInsertSchema(Course, {
+  name: z.string().min(1),
+  description: z.string().min(1),
+  courseCode: z.string().min(1),
+  imageUrl: z.string().min(1),
+  cost: z.string(),
+  avgCompletionMinutes: z.number().int().positive(),
+  validityMonths: z.number().int().positive(),
+  tags: z.array(z.string()),
+  tokenId: z.number().int().positive(),
+}).omit({
+  id: true,
+  createdAt: true,
+});

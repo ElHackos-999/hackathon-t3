@@ -59,7 +59,14 @@ export function CompletedCoursesGrid({
           </CardHeader>
           <CardContent>
             <div className="text-muted-foreground text-sm">
-              <p>Completed: {completion.completionDate.toLocaleDateString()}</p>
+              <p>
+                Completed:{" "}
+                {completion.completionDate.toLocaleDateString("en-AU", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
+              </p>
               <p>Token ID: {completion.tokenId}</p>
             </div>
           </CardContent>
