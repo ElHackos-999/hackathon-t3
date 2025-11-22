@@ -2,6 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import CustomShaderMaterial from "three-custom-shader-material/vanilla";
+
+import wobbleVertexShader from './shaders/wobble/vertex.glsl';
+import wobbleFragmentShader from './shaders/wobble/fragment.glsl';
 
 interface ThreeBackgroundProps {
   isSpeaking: boolean;
@@ -40,13 +45,41 @@ export function ThreeBackground({ isSpeaking }: ThreeBackgroundProps) {
     rendererRef.current = renderer;
 
     // Sphere setup
-    const geometry = new THREE.SphereGeometry(2, 32, 32);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x6366f1, // Indigo-500
-      wireframe: true,
+    const uniforms = {
+      uTime: new THREE.Uniform(0),
+      uPositionFrequency: new THREE.Uniform(0.5),
+      uTimeFrequency: new THREE.Uniform(0.4),
+      uStrength: new THREE.Uniform(0.3),
+      uWarpPositionFrequency: new THREE.Uniform(0.38),
+      uWarpTimeFrequency: new THREE.Uniform(0.12),
+      uWarpStrength: new THREE.Uniform(1.7),
+      uColorA: new THREE.Uniform(new THREE.Color("#6366f1")),
+      uColorB: new THREE.Uniform(new THREE.Color("#ec4899")),
+    };
+
+    const material = new CustomShaderMaterial({
+      // CSM
+      baseMaterial: THREE.MeshPhysicalMaterial,
+      vertexShader: wobbleVertexShader,
+      fragmentShader: wobbleFragmentShader,
+      uniforms: uniforms,
+
+      // MeshPhysicalMaterial
+      metalness: 0,
+      roughness: 0.5,
+      color: '#ffffff',
+      transmission: 0,
+      ior: 1.5,
+      thickness: 1.5,
       transparent: true,
-      opacity: 0.3,
+      wireframe: false,
     });
+
+    let geometry = new THREE.IcosahedronGeometry(2, 50);
+    // @ts-expect-error -- description
+    geometry = mergeVertices(geometry);
+    geometry.computeTangents();
+
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
     sphereRef.current = sphere;
