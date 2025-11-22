@@ -14,16 +14,16 @@ export default async function CertificationAdminPage() {
         Training Certification Management
       </h1>
 
-      {/* Create Course Section */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
-        <h2 className="mb-4 text-xl font-semibold">Create New Course</h2>
-        <CreateCourseForm />
-      </div>
+      <div className="grid gap-8 md:grid-cols-2">
+        <div>
+          <h2 className="mb-4 text-xl font-semibold">Course Management</h2>
+          <CreateCourseForm />
+        </div>
 
-      {/* Mint Certification Section */}
-      <div className="rounded-lg border bg-card p-6">
-        <h2 className="mb-4 text-xl font-semibold">Mint Certification</h2>
-        <MintCertificationForm totalCourses={Number(totalCourses)} />
+        <div>
+          <h2 className="mb-4 text-xl font-semibold">Certification Minting</h2>
+          <MintCertificationForm totalCourses={Number(totalCourses)} />
+        </div>
       </div>
     </div>
   );
