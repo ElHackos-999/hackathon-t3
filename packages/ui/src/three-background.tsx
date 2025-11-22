@@ -79,10 +79,10 @@ export function ThreeBackground({ isSpeaking }: ThreeBackgroundProps) {
 
     // Handle resize
     const handleResize = () => {
-      if (cameraRef.current && rendererRef.current) {
-        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+      if (cameraRef.current && rendererRef.current && containerRef.current) {
+        cameraRef.current.aspect = containerRef.current.offsetWidth / containerRef.current.offsetHeight;
         cameraRef.current.updateProjectionMatrix();
-        rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+        rendererRef.current.setSize(containerRef.current.offsetWidth, containerRef.current.offsetHeight);
       }
     };
 
