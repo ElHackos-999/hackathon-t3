@@ -28,7 +28,7 @@ const config: HardhatUserConfig = {
       chainId: 31337,
     },
     baseSepolia: {
-      url: `https://base-sepolia.g.alchemy.com/v2/sBkzmy2SlusP7hZ4T3_Q8`,
+      url: `https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
       accounts: [PRIVATE_KEY],
       chainId: 84532,
     },
