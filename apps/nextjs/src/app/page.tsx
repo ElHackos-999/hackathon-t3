@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
+
 import { ChatInterface } from "@acme/ui/chat-interface";
 import { ThreeBackground } from "@acme/ui/three-background";
+
 import { sendMessage } from "./actions";
 
 export default function HomePage() {
@@ -26,9 +28,9 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center overflow-hidden">
-      <div className="w-full max-w-4xl px-4 flex flex-col items-center gap-8">
-        <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight text-center drop-shadow-lg">
+    <main className="flex min-h-screen flex-col items-center justify-center overflow-hidden">
+      <div className="flex w-full max-w-4xl flex-col items-center gap-8 px-4">
+        <h1 className="text-center text-4xl font-bold tracking-tight text-white drop-shadow-lg md:text-6xl">
           Ask to AI
         </h1>
 
@@ -36,8 +38,8 @@ export default function HomePage() {
           <ThreeBackground isSpeaking={isSpeaking} response={response} />
 
           <div className="relative z-10 flex h-full items-center justify-center">
-            <ChatInterface 
-              onSpeakingChange={setIsSpeaking} 
+            <ChatInterface
+              onSpeakingChange={setIsSpeaking}
               onSendMessage={handleSendMessage}
             />
           </div>

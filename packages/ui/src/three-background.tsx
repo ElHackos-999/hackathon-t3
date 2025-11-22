@@ -2,22 +2,25 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import CustomShaderMaterial from "three-custom-shader-material/vanilla";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+
+import audioFragmentShader from "./shaders/audio/fragment.glsl";
+import audioVertexShader from "./shaders/audio/vertex.glsl";
+import wobbleFragmentShader from "./shaders/wobble/fragment.glsl";
 // import {puter} from '@heyputer/puter.js'; // Dynamic import to avoid SSR issues
 
-import wobbleVertexShader from './shaders/wobble/vertex.glsl';
-import wobbleFragmentShader from './shaders/wobble/fragment.glsl';
-
-import audioVertexShader from './shaders/audio/vertex.glsl';
-import audioFragmentShader from './shaders/audio/fragment.glsl';
+import wobbleVertexShader from "./shaders/wobble/vertex.glsl";
 
 interface ThreeBackgroundProps {
   isSpeaking: boolean;
   response: string;
 }
 
-export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) {
+export function ThreeBackground({
+  isSpeaking,
+  response,
+}: ThreeBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -31,9 +34,10 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
   const audioAnalyserRef = useRef<AudioNode | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !audioContextRef.current) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (typeof window !== "undefined" && !audioContextRef.current) {
+      const AudioContextClass =
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContextClass();
       const analyser = audioContext.createAnalyser();
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
@@ -46,8 +50,9 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
   }, []);
 
   const getAudioData = () => {
-    if (!analyserRef.current || !dataArrayRef.current) return { volume: 0, frequencies: new Uint8Array(0) };
-    
+    if (!analyserRef.current || !dataArrayRef.current)
+      return { volume: 0, frequencies: new Uint8Array(0) };
+
     const dataArray = dataArrayRef.current;
     // @ts-expect-error -- description
     analyserRef.current.getByteFrequencyData(dataArray);
@@ -55,8 +60,8 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
     const volume = dataArray.reduce((a, b) => a + b) / dataArray.length;
     const frequencies = dataArray;
 
-    return {volume, frequencies};
-  }
+    return { volume, frequencies };
+  };
 
   const mapVolumeToRange = (rawVolume: number, min: number, max: number) => {
     return min + (rawVolume / 255) * (max - min);
@@ -66,36 +71,43 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
     if (!text) return;
 
     try {
-      const { puter } = await import('@heyputer/puter.js');
+      const { puter } = await import("@heyputer/puter.js");
 
       // Ensure AudioContext is running
-      if (audioContextRef.current?.state === 'suspended') {
+      if (audioContextRef.current?.state === "suspended") {
         await audioContextRef.current.resume();
         console.log("AudioContext resumed");
       }
 
-      puter.ai.txt2speech(text, {
-        voice: 'Joanna',
-        engine: 'neural',
-        language: 'en-US',
-      }).then((audio: HTMLAudioElement) => {
-        audio.volume = 1.0; // Ensure volume is up
-        
-        const playPromise = audio.play();
+      puter.ai
+        .txt2speech(text, {
+          voice: "Joanna",
+          engine: "neural",
+          language: "en-US",
+        })
+        .then((audio: HTMLAudioElement) => {
+          audio.volume = 1.0; // Ensure volume is up
 
-        playPromise.then(() => {
-          console.log("Audio playing successfully");
+          const playPromise = audio.play();
 
-          if (!audioAnalyserRef.current || !audioContextRef.current) return;
+          playPromise
+            .then(() => {
+              console.log("Audio playing successfully");
 
-          // Create source only if not already connected (though for new audio element it's new source)
-          const source = audioContextRef.current.createMediaElementSource(audio);
-          source.connect(audioAnalyserRef.current);
-          audioAnalyserRef.current.connect(audioContextRef.current.destination);
-        }).catch(error => {
-          console.error("Audio playback blocked:", error);
+              if (!audioAnalyserRef.current || !audioContextRef.current) return;
+
+              // Create source only if not already connected (though for new audio element it's new source)
+              const source =
+                audioContextRef.current.createMediaElementSource(audio);
+              source.connect(audioAnalyserRef.current);
+              audioAnalyserRef.current.connect(
+                audioContextRef.current.destination,
+              );
+            })
+            .catch((error) => {
+              console.error("Audio playback blocked:", error);
+            });
         });
-      });
     } catch (error) {
       console.error("Failed to play audio:", error);
     }
@@ -114,20 +126,23 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
       75,
       containerRef.current.offsetWidth / containerRef.current.offsetHeight,
       0.1,
-      1000
+      1000,
     );
     camera.position.z = 5;
     cameraRef.current = camera;
 
     // Renderer setup
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(containerRef.current.offsetWidth, containerRef.current.offsetHeight);
+    renderer.setSize(
+      containerRef.current.offsetWidth,
+      containerRef.current.offsetHeight,
+    );
     renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Environment setup
-    textureLoader.load('/textures/env-light_small.png', (texture) => {
+    textureLoader.load("/textures/env-light_small.png", (texture) => {
       texture.mapping = THREE.EquirectangularReflectionMapping;
       scene.environment = texture;
       scene.environmentIntensity = 1;
@@ -162,7 +177,7 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
       // MeshPhysicalMaterial
       metalness: 0,
       roughness: 0.5,
-      color: '#ffffff',
+      color: "#ffffff",
       transmission: 0,
       ior: 1.5,
       thickness: 1.5,
@@ -194,20 +209,27 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
         // @ts-expect-error -- description
         material.uniforms.uFrequencies.value = getAudioData().frequencies;
         // @ts-expect-error -- description
-        material.uniforms.uPositionFrequency.value = mapVolumeToRange(getAudioData().volume, 0.2, 0.7);
+        material.uniforms.uPositionFrequency.value = mapVolumeToRange(
+          getAudioData().volume,
+          0.2,
+          0.7,
+        );
         // @ts-expect-error -- description
-        material.uniforms.uWarpPositionFrequency.value = mapVolumeToRange(getAudioData().volume, 0.3, 0.9);
-
+        material.uniforms.uWarpPositionFrequency.value = mapVolumeToRange(
+          getAudioData().volume,
+          0.3,
+          0.9,
+        );
 
         if (isSpeaking) {
-           // Pulse effect when speaking
-           const time = Date.now() * 0.005;
-           const scale = 1 + Math.sin(time) * 0.05;
-           sphereRef.current.scale.set(scale, scale, scale);
-           sphereRef.current.rotation.x += 0.01;
-           sphereRef.current.rotation.y += 0.01;
+          // Pulse effect when speaking
+          const time = Date.now() * 0.005;
+          const scale = 1 + Math.sin(time) * 0.05;
+          sphereRef.current.scale.set(scale, scale, scale);
+          sphereRef.current.rotation.x += 0.01;
+          sphereRef.current.rotation.y += 0.01;
         } else {
-           sphereRef.current.scale.set(1, 1, 1);
+          sphereRef.current.scale.set(1, 1, 1);
         }
       }
 
@@ -220,9 +242,13 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
     // Handle resize
     const handleResize = () => {
       if (cameraRef.current && rendererRef.current && containerRef.current) {
-        cameraRef.current.aspect = containerRef.current.offsetWidth / containerRef.current.offsetHeight;
+        cameraRef.current.aspect =
+          containerRef.current.offsetWidth / containerRef.current.offsetHeight;
         cameraRef.current.updateProjectionMatrix();
-        rendererRef.current.setSize(containerRef.current.offsetWidth, containerRef.current.offsetHeight);
+        rendererRef.current.setSize(
+          containerRef.current.offsetWidth,
+          containerRef.current.offsetHeight,
+        );
       }
     };
 
@@ -252,7 +278,7 @@ export function ThreeBackground({ isSpeaking, response }: ThreeBackgroundProps) 
   return (
     <div
       ref={containerRef}
-      className="w-full h-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 inset-0 -z-10 pointer-events-none"
+      className="pointer-events-none absolute inset-0 top-1/2 left-1/2 -z-10 h-full w-full -translate-x-1/2 -translate-y-1/2"
       style={{ background: "linear-gradient(to bottom, #0f172a, #1e293b)" }}
     />
   );

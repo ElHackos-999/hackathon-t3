@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Bot, Mic, Send, User } from "lucide-react";
+
+import { cn } from "@acme/ui";
+
 import { Button } from "./button";
 import { Input } from "./input";
-import { Mic, Send, User, Bot } from "lucide-react";
-import { cn } from "@acme/ui";
 
 interface Message {
   id: string;
@@ -18,18 +20,22 @@ interface ChatInterfaceProps {
   onSendMessage: (message: string) => Promise<string>;
 }
 
-export function ChatInterface({ onSpeakingChange, onSendMessage }: ChatInterfaceProps) {
+export function ChatInterface({
+  onSpeakingChange,
+  onSendMessage,
+}: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      id: "1", 
-      role: "assistant", 
-      content: "Hello! I can help you verify user certifications. Just ask me to 'verify a certificate'." 
-    }
+    {
+      id: "1",
+      role: "assistant",
+      content:
+        "Hello! I can help you verify user certifications. Just ask me to 'verify a certificate'.",
+    },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -51,37 +57,43 @@ export function ChatInterface({ onSpeakingChange, onSendMessage }: ChatInterface
 
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
-    
+
     setIsProcessing(true);
     onSpeakingChange(true);
 
     try {
       const response = await onSendMessage(text);
-      
-      setMessages(prev => [...prev, { 
-        id: Date.now().toString(), 
-        role: "assistant", 
-        content: response,
-      }]);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: response,
+        },
+      ]);
     } catch (error) {
-      setMessages(prev => [...prev, { 
-        id: Date.now().toString(), 
-        role: "assistant", 
-        content: "I'm sorry, I encountered an error. Please try again.",
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: "I'm sorry, I encountered an error. Please try again.",
+        },
+      ]);
     } finally {
       setIsProcessing(false);
       onSpeakingChange(false);
     }
   };
 
-
-
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition =
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
@@ -129,68 +141,87 @@ export function ChatInterface({ onSpeakingChange, onSendMessage }: ChatInterface
   };
 
   return (
-    <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto bg-background/20 backdrop-blur-[4px] rounded-xl border shadow-xl">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="bg-background/20 mx-auto flex h-[600px] w-full max-w-2xl flex-col rounded-xl border shadow-xl backdrop-blur-[4px]">
+      <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={cn(
               "flex flex-col gap-2",
-              message.role === "user" ? "items-end" : "items-start"
+              message.role === "user" ? "items-end" : "items-start",
             )}
           >
-            <div className={cn(
-              "flex items-start gap-3 max-w-[80%]",
-              message.role === "user" ? "flex-row-reverse" : "flex-row"
-            )}>
+            <div
+              className={cn(
+                "flex max-w-[80%] items-start gap-3",
+                message.role === "user" ? "flex-row-reverse" : "flex-row",
+              )}
+            >
               <div
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                  message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                  message.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground",
                 )}
               >
-                {message.role === "user" ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
+                {message.role === "user" ? (
+                  <User className="h-5 w-5" />
+                ) : (
+                  <Bot className="h-5 w-5" />
+                )}
               </div>
               <div
                 className={cn(
-                  "p-3 rounded-lg",
+                  "rounded-lg p-3",
                   message.role === "user"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                    : "bg-muted",
                 )}
               >
                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
               </div>
             </div>
-
           </div>
         ))}
         {isProcessing && (
-           <div className="flex items-start gap-3">
-             <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-               <Bot className="w-5 h-5" />
-             </div>
-             <div className="bg-muted p-3 rounded-lg">
-               <div className="flex gap-1">
-                 <span className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                 <span className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                 <span className="w-2 h-2 bg-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-               </div>
-             </div>
-           </div>
+          <div className="flex items-start gap-3">
+            <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+              <Bot className="h-5 w-5" />
+            </div>
+            <div className="bg-muted rounded-lg p-3">
+              <div className="flex gap-1">
+                <span
+                  className="bg-foreground/50 h-2 w-2 animate-bounce rounded-full"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="bg-foreground/50 h-2 w-2 animate-bounce rounded-full"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="bg-foreground/50 h-2 w-2 animate-bounce rounded-full"
+                  style={{ animationDelay: "300ms" }}
+                />
+              </div>
+            </div>
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t bg-background/50 backdrop-blur-sm rounded-b-xl">
+      <div className="bg-background/50 rounded-b-xl border-t p-4 backdrop-blur-sm">
         <div className="flex gap-2">
           <Button
             variant={isListening ? "destructive" : "outline"}
             size="icon"
             onClick={handleMicClick}
-            className={cn("shrink-0 transition-all", isListening && "animate-pulse")}
+            className={cn(
+              "shrink-0 transition-all",
+              isListening && "animate-pulse",
+            )}
           >
-            <Mic className="w-5 h-5" />
+            <Mic className="h-5 w-5" />
           </Button>
           <Input
             value={inputValue}
@@ -199,8 +230,12 @@ export function ChatInterface({ onSpeakingChange, onSendMessage }: ChatInterface
             placeholder="Type a message..."
             className="flex-1"
           />
-          <Button onClick={() => handleSendMessage()} size="icon" disabled={!inputValue.trim() || isProcessing}>
-            <Send className="w-5 h-5" />
+          <Button
+            onClick={() => handleSendMessage()}
+            size="icon"
+            disabled={!inputValue.trim() || isProcessing}
+          >
+            <Send className="h-5 w-5" />
           </Button>
         </div>
       </div>

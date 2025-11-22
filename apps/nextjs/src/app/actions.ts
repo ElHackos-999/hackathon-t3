@@ -3,6 +3,7 @@
 "use server";
 
 import OpenAI from "openai";
+
 import { env } from "../env";
 
 // Mock Data (Same as before)
@@ -13,14 +14,12 @@ const MOCK_USERS = [
 ];
 
 const MOCK_COURSES = {
-  "u1": [
+  u1: [
     { id: "c1", name: "Blockchain Basics", code: "BC101" },
     { id: "c2", name: "Smart Contract Security", code: "SC201" },
   ],
-  "u2": [
-    { id: "c1", name: "Blockchain Basics", code: "BC101" },
-  ],
-  "u3": [],
+  u2: [{ id: "c1", name: "Blockchain Basics", code: "BC101" }],
+  u3: [],
 };
 
 // Tools implementation
@@ -28,7 +27,7 @@ const tools = {
   getUsers: async ({ query }: { query?: string }) => {
     if (!query) return MOCK_USERS;
     const lowerQuery = query.toLowerCase();
-    return MOCK_USERS.filter(u => u.name.toLowerCase().includes(lowerQuery));
+    return MOCK_USERS.filter((u) => u.name.toLowerCase().includes(lowerQuery));
   },
   getUserCourses: async ({ userId }: { userId: string }) => {
     return MOCK_COURSES[userId as keyof typeof MOCK_COURSES];
@@ -38,13 +37,13 @@ const tools = {
     const isValid = Math.random() > 0.2;
     const expirationDate = new Date();
     expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-    
+
     return {
       valid: isValid,
       expiresAt: isValid ? expirationDate.toISOString() : null,
-      courseId
+      courseId,
     };
-  }
+  },
 };
 
 export async function sendMessage(message: string) {
@@ -69,7 +68,7 @@ export async function sendMessage(message: string) {
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
-    { role: "user", content: message }
+    { role: "user", content: message },
   ];
 
   // First call to OpenAI to see if it wants to call a tool
@@ -85,10 +84,10 @@ export async function sendMessage(message: string) {
           parameters: {
             type: "object",
             properties: {
-              query: { type: "string", description: "The name to search for" }
-            }
-          }
-        }
+              query: { type: "string", description: "The name to search for" },
+            },
+          },
+        },
       },
       {
         type: "function",
@@ -98,11 +97,11 @@ export async function sendMessage(message: string) {
           parameters: {
             type: "object",
             properties: {
-              userId: { type: "string", description: "The ID of the user" }
+              userId: { type: "string", description: "The ID of the user" },
             },
-            required: ["userId"]
-          }
-        }
+            required: ["userId"],
+          },
+        },
       },
       {
         type: "function",
@@ -112,12 +111,12 @@ export async function sendMessage(message: string) {
           parameters: {
             type: "object",
             properties: {
-              courseId: { type: "string", description: "The ID of the course" }
+              courseId: { type: "string", description: "The ID of the course" },
             },
-            required: ["courseId"]
-          }
-        }
-      }
+            required: ["courseId"],
+          },
+        },
+      },
     ],
     tool_choice: "auto",
   });
@@ -133,9 +132,9 @@ export async function sendMessage(message: string) {
       const functionName = toolCall.function.name;
       // @ts-expect-error -- description
       const functionArgs = JSON.parse(toolCall.function.arguments);
-      
+
       let functionResult;
-      
+
       if (functionName === "getUsers") {
         functionResult = await tools.getUsers(functionArgs);
       } else if (functionName === "getUserCourses") {
@@ -157,7 +156,10 @@ export async function sendMessage(message: string) {
       messages,
     });
 
-    return secondResponse.choices[0]?.message.content || "I encountered an error processing your request.";
+    return (
+      secondResponse.choices[0]?.message.content ||
+      "I encountered an error processing your request."
+    );
   }
 
   return responseMessage?.content || "I'm sorry, I didn't understand that.";

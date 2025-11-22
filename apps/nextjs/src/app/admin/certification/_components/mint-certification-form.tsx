@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { Button } from "@acme/ui/button";
 import { Field, FieldError, FieldGroup } from "@acme/ui/field";
 import { Input } from "@acme/ui/input";
@@ -46,7 +47,7 @@ export function MintCertificationForm({
         const form = document.getElementById(
           "mint-certification-form",
         ) as HTMLFormElement;
-        form?.reset();
+        form.reset();
       } else {
         setResult({
           success: false,
@@ -56,8 +57,7 @@ export function MintCertificationForm({
     } catch (error) {
       setResult({
         success: false,
-        message:
-          error instanceof Error ? error.message : "An error occurred",
+        message: error instanceof Error ? error.message : "An error occurred",
       });
     } finally {
       setIsSubmitting(false);
@@ -98,9 +98,7 @@ export function MintCertificationForm({
             max={totalCourses}
             disabled={isSubmitting}
           />
-          <FieldError>
-            Token ID must be between 1 and {totalCourses}
-          </FieldError>
+          <FieldError>Token ID must be between 1 and {totalCourses}</FieldError>
         </Field>
       </FieldGroup>
 

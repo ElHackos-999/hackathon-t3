@@ -82,7 +82,7 @@ export function Sidebar({ className, footer }: SidebarProps) {
           </h2>
           <div className="space-y-1">
             <Button
-              variant={pathname?.startsWith("/proof") ? "secondary" : "ghost"}
+              variant={pathname.startsWith("/proof") ? "secondary" : "ghost"}
               className="w-full cursor-pointer justify-start"
               asChild
             >

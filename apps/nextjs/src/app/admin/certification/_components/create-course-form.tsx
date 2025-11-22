@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useState } from "react";
+
 import { Button } from "@acme/ui/button";
 import { Field, FieldError, FieldGroup } from "@acme/ui/field";
 import { Input } from "@acme/ui/input";
@@ -61,7 +62,7 @@ export function CreateCourseForm() {
         const form = document.getElementById(
           "create-course-form",
         ) as HTMLFormElement;
-        form?.reset();
+        form.reset();
         setSelectedFile(null);
         setPreviewUrl(null);
 
@@ -78,8 +79,7 @@ export function CreateCourseForm() {
     } catch (error) {
       setResult({
         success: false,
-        message:
-          error instanceof Error ? error.message : "An error occurred",
+        message: error instanceof Error ? error.message : "An error occurred",
       });
     } finally {
       setIsSubmitting(false);
@@ -111,11 +111,7 @@ export function CreateCourseForm() {
   }, [previewUrl]);
 
   return (
-    <form
-      id="create-course-form"
-      action={handleSubmit}
-      className="space-y-4"
-    >
+    <form id="create-course-form" action={handleSubmit} className="space-y-4">
       <FieldGroup>
         <Field>
           <Label htmlFor="courseCode">Course Code</Label>
@@ -168,7 +164,7 @@ export function CreateCourseForm() {
 
           {previewUrl && (
             <div className="mt-2">
-              <p className="text-sm text-muted-foreground mb-2">Preview:</p>
+              <p className="text-muted-foreground mb-2 text-sm">Preview:</p>
               <img
                 src={previewUrl}
                 alt="Preview"
@@ -179,9 +175,7 @@ export function CreateCourseForm() {
         </Field>
 
         <Field>
-          <Label htmlFor="validityDurationDays">
-            Validity Duration (days)
-          </Label>
+          <Label htmlFor="validityDurationDays">Validity Duration (days)</Label>
           <Input
             id="validityDurationDays"
             name="validityDurationDays"

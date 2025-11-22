@@ -1,9 +1,9 @@
-import { env } from "process";
+import { env } from "~/env";
 import { createThirdwebClient } from "thirdweb";
 import { upload } from "thirdweb/storage";
 
 export const serverClient = createThirdwebClient({
-  secretKey: env.THIRDWEB_SECRET_KEY ?? "",
+  secretKey: env.THIRDWEB_SECRET_KEY,
 });
 
 /**

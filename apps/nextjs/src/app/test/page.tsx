@@ -6,12 +6,12 @@ import { Button } from "@acme/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
 
 import {
-  getPublicData,
-  getPersonalizedGreeting,
-  getUserProfile,
-  updateUserSettings,
   createCourseCompletion,
   debugAuthState,
+  getPersonalizedGreeting,
+  getPublicData,
+  getUserProfile,
+  updateUserSettings,
 } from "~/app/actions/example";
 
 export default function TestPage() {
@@ -25,17 +25,14 @@ export default function TestPage() {
     ]);
   };
 
-  const handleAction = async (
-    name: string,
-    action: () => Promise<unknown>
-  ) => {
+  const handleAction = async (name: string, action: () => Promise<unknown>) => {
     setLoading(name);
     try {
       const result = await action();
       addResult(`${name}: ${JSON.stringify(result, null, 2)}`);
     } catch (error) {
       addResult(
-        `${name} ERROR: ${error instanceof Error ? error.message : "Unknown error"}`
+        `${name} ERROR: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     } finally {
       setLoading(null);
@@ -116,7 +113,7 @@ export default function TestPage() {
                   updateUserSettings({
                     notifications: true,
                     theme: "dark",
-                  })
+                  }),
                 )
               }
             >
@@ -133,7 +130,7 @@ export default function TestPage() {
                   createCourseCompletion({
                     courseId: "test-course-123",
                     score: 95,
-                  })
+                  }),
                 )
               }
             >

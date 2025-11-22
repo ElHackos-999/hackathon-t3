@@ -14,14 +14,14 @@ import type {
 } from "../validators/certification";
 import { getAdminAccount } from "../utils/adminAccount";
 import { getTrainingCertificationContract } from "../utils/contract";
+import { uploadToIPFS } from "../utils/storage";
 import {
   batchMintCertificationsSchema,
   createCourseSchema,
   mintCertificationSchema,
   updateCourseSchema,
+  validateImageFile,
 } from "../validators/certification";
-import { uploadToIPFS } from "../utils/storage";
-import { validateImageFile } from "../validators/certification";
 
 /**
  * Generic action result type for error handling
@@ -50,7 +50,7 @@ export async function createCourse(
     if (!fileValidation.valid) {
       return {
         success: false,
-        error: fileValidation.error!,
+        error: fileValidation.error ?? "Invalid image file format",
       };
     }
 
@@ -109,8 +109,7 @@ export async function createCourse(
     console.error("Error creating course:", error);
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to create course",
+      error: error instanceof Error ? error.message : "Failed to create course",
     };
   }
 }

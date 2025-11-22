@@ -6,7 +6,7 @@ import { env } from "~/env";
 
 function getThirdwebAuth() {
   const secretKey = env.PRIVATE_KEY;
-  const appUrl = env.NEXT_PUBLIC_APP_URL;
+  const appUrl = env.VERCEL_URL;
 
   if (!secretKey || !appUrl) {
     throw new Error(
