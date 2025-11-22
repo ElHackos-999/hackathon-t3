@@ -8,6 +8,7 @@ import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
 
 import { mintCertification } from "~/app/actions/certification";
+import { SuccessDialog } from "./success-dialog";
 
 interface MintCertificationFormProps {
   totalCourses: number;
@@ -20,6 +21,12 @@ export function MintCertificationForm({
   const [result, setResult] = useState<{
     success: boolean;
     message: string;
+  } | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [successData, setSuccessData] = useState<{
+    transactionHash: string;
+    recipientAddress: string;
+    tokenId: string;
   } | null>(null);
 
   async function handleSubmit(formData: FormData) {
@@ -38,10 +45,13 @@ export function MintCertificationForm({
       });
 
       if (response.success) {
-        setResult({
-          success: true,
-          message: `Certification minted successfully! Transaction: ${response.data.transactionHash}`,
+        // Set success data and show dialog
+        setSuccessData({
+          transactionHash: response.data.transactionHash,
+          recipientAddress: to,
+          tokenId: tokenId.toString(),
         });
+        setShowSuccessDialog(true);
 
         // Reset form
         const form = document.getElementById(
@@ -106,17 +116,20 @@ export function MintCertificationForm({
         {isSubmitting ? "Minting..." : "Mint Certification"}
       </Button>
 
-      {result && (
-        <div
-          className={`mt-4 rounded-lg border p-4 ${
-            result.success
-              ? "border-green-500 bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-100"
-              : "border-red-500 bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-100"
-          }`}
-        >
+      {result && !result.success && (
+        <div className="mt-4 rounded-lg border border-red-500 bg-red-50 p-4 text-red-900 dark:bg-red-950 dark:text-red-100">
           <p className="text-sm">{result.message}</p>
         </div>
       )}
+
+      <SuccessDialog
+        open={showSuccessDialog}
+        onOpenChange={setShowSuccessDialog}
+        title="Certification Minted Successfully!"
+        description={`NFT certification has been minted to ${successData?.recipientAddress.slice(0, 6)}...${successData?.recipientAddress.slice(-4)}`}
+        transactionHash={successData?.transactionHash}
+        tokenId={successData?.tokenId}
+      />
     </form>
   );
 }
