@@ -88,25 +88,16 @@ function SidebarContent({
             Verification
           </h2>
           <div className="space-y-1">
-            {verificationLinks.map((link) => {
-              const Icon = link.icon;
-              return (
-                <Button
-                  key={link.href}
-                  variant={
-                    pathname?.startsWith("/proof") ? "secondary" : "ghost"
-                  }
-                  className="w-full justify-start"
-                  asChild
-                  onClick={onLinkClick}
-                >
-                  <Link href={link.href}>
-                    <Icon className="mr-2 h-4 w-4" />
-                    {link.name}
-                  </Link>
-                </Button>
-              );
-            })}
+            <Button
+              variant={pathname?.startsWith("/proof") ? "secondary" : "ghost"}
+              className="w-full cursor-pointer justify-start"
+              asChild
+            >
+              <Link href="/proof/verify">
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                Verify Proof
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

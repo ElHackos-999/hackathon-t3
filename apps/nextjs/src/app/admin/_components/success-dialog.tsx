@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, ExternalLink } from "lucide-react";
+
 import { Button } from "@acme/ui/button";
 import {
   Dialog,
@@ -63,8 +64,8 @@ export function SuccessDialog({
 
           {/* Token ID */}
           {tokenId && (
-            <div className="rounded-lg bg-muted p-3">
-              <p className="text-sm font-medium text-muted-foreground mb-1">
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-muted-foreground mb-1 text-sm font-medium">
                 Token ID
               </p>
               <p className="font-mono text-sm break-all">{tokenId}</p>
@@ -73,8 +74,8 @@ export function SuccessDialog({
 
           {/* Transaction Hash */}
           {transactionHash && (
-            <div className="rounded-lg bg-muted p-3">
-              <p className="text-sm font-medium text-muted-foreground mb-1">
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-muted-foreground mb-1 text-sm font-medium">
                 Transaction Hash
               </p>
               <p className="font-mono text-sm break-all">{transactionHash}</p>

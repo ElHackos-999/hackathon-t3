@@ -109,7 +109,7 @@ export async function login(
   const cookieStore = await cookies();
   cookieStore.set("jwt", jwt, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: "/",
@@ -183,7 +183,7 @@ export async function logout() {
   const cookieStore = await cookies();
   cookieStore.set("jwt", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 0,
     path: "/",
