@@ -25,15 +25,11 @@ export const courseNameSchema = z
   .max(100, "Course name must be at most 100 characters");
 
 /**
- * Image URI validation (supports HTTP, HTTPS, and IPFS)
+ * Image URI validation
  */
 export const imageURISchema = z
   .string()
-  .min(1, "Image URI is required")
-  .refine(
-    (val) => /^(https?|ipfs):\/\/.+/.test(val),
-    { message: "Must be a valid HTTP, HTTPS, or IPFS URI" }
-  );
+  .min(1, "Image URI is required");
 
 /**
  * Allowed image MIME types
