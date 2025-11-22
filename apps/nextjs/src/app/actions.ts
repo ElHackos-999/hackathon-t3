@@ -74,7 +74,7 @@ export async function sendMessage(message: string) {
 
   // First call to OpenAI to see if it wants to call a tool
   const response = await openai.chat.completions.create({
-    model: "gpt-5.1-mini",
+    model: "gpt-4.1-mini",
     messages,
     tools: [
       {
@@ -153,7 +153,7 @@ export async function sendMessage(message: string) {
 
     // Second call to OpenAI to get the final response after tool execution
     const secondResponse = await openai.chat.completions.create({
-      model: "gpt-5.1-mini",
+      model: "gpt-4.1-mini",
       messages,
     });
 

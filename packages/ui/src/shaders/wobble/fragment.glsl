@@ -6,16 +6,13 @@ varying float vOffset;
 
 void main()
 {
-//    float colorMix = smoothstep(- 1.0, 1.0, vWobble);
-//    csm_DiffuseColor.rgb = mix(uColorA, uColorB, colorMix);
-
-    float colorMix = smoothstep(- 1.0, 1.0, vOffset);
+    float colorMix = smoothstep(- 1.0, 1.0, vOffset + vWobble);
     csm_DiffuseColor.rgb = mix(uColorA, uColorB, colorMix);
 
-    // // Mirror step
-    // csm_Metalness = step(0.25, vWobble);
-    // csm_Roughness = 1.0 - csm_Metalness;
+    // Mirror
+    csm_Metalness = smoothstep(0.8, 1.0, vOffset);
+    csm_Roughness = 1.0 - csm_Metalness;
 
-    // Shinny tip
+    // Shinny
     csm_Roughness = 1.0 - colorMix;
 }

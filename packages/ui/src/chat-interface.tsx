@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
-import { Card, CardContent } from "./card";
 import { Mic, Send, User, Bot } from "lucide-react";
 import { cn } from "@acme/ui";
 
@@ -78,15 +77,54 @@ export function ChatInterface({ onSpeakingChange, onSendMessage }: ChatInterface
 
 
 
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          setInputValue(transcript);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          handleSendMessage(transcript);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error("Speech recognition error", event.error);
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
   const handleMicClick = () => {
     if (isListening) {
+      recognitionRef.current?.stop();
       setIsListening(false);
     } else {
-      setIsListening(true);
-      setTimeout(() => {
-        setInputValue("Verify a certificate");
-        setIsListening(false);
-      }, 1500);
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          setIsListening(true);
+        } catch (error) {
+          console.error("Failed to start speech recognition:", error);
+        }
+      } else {
+        alert("Speech recognition is not supported in this browser.");
+      }
     }
   };
 
