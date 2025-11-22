@@ -1,12 +1,15 @@
 "use server";
 
-import { cookies } from "next/headers";
 import type { VerifyLoginPayloadParams } from "thirdweb/auth";
+import { cookies } from "next/headers";
+import dotenv from "dotenv";
 import { createAuth } from "thirdweb/auth";
 import { privateKeyToAccount } from "thirdweb/wallets";
 
 import { client } from "~/app/utils/thirdwebClient";
 import { env } from "~/env";
+
+dotenv.config();
 
 function getThirdwebAuth() {
   const secretKey = env.PRIVATE_KEY;
@@ -113,4 +116,18 @@ export async function logout() {
   });
 
   return { success: true };
+}
+
+/**
+ * Get the authenticated user or throw an error.
+ * Use this in protected server actions.
+ */
+export async function requireAuth() {
+  const user = await getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  return user;
 }
