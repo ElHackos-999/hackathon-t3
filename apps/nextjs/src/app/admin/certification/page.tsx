@@ -1,6 +1,6 @@
 import { getTotalCourses } from "~/app/actions/certification";
-import { CreateCourseForm } from "./_components/create-course-form";
-import { MintCertificationForm } from "./_components/mint-certification-form";
+import { CreateCourseForm } from "../_components/create-course-form";
+import { MintCertificationForm } from "../_components/mint-certification-form";
 
 export default async function CertificationAdminPage() {
   // Fetch the total number of courses
