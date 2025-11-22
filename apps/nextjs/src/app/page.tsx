@@ -8,6 +8,7 @@ import { sendMessage } from "./actions";
 export default function HomePage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [response, setResponse] = useState<string>("");
 
   const handleSendMessage = async (message: string) => {
     return new Promise<string>((resolve, reject) => {
@@ -15,6 +16,8 @@ export default function HomePage() {
         try {
           const response = await sendMessage(message);
           resolve(response);
+
+          setResponse(response);
         } catch (error) {
           // reject(error);
         }
@@ -30,7 +33,7 @@ export default function HomePage() {
         </h1>
 
         <div className="relative w-full max-w-2xl overflow-hidden rounded-xl">
-          <ThreeBackground isSpeaking={isSpeaking} />
+          <ThreeBackground isSpeaking={isSpeaking} response={response} />
 
           <div className="relative z-10 flex h-full items-center justify-center">
             <ChatInterface 

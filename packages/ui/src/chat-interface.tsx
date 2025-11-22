@@ -91,7 +91,7 @@ export function ChatInterface({ onSpeakingChange, onSendMessage }: ChatInterface
   };
 
   return (
-    <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto bg-background/0 backdrop-blur-[0px] rounded-xl border shadow-xl">
+    <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto bg-background/20 backdrop-blur-[4px] rounded-xl border shadow-xl">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div

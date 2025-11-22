@@ -58,7 +58,7 @@ export async function sendMessage(message: string) {
   
   Follow this flow:
   1. If the user asks to verify a certificate, ask for the user's name if not provided.
-  2. Use 'getUsers' to find the user. If multiple found, ask to clarify. If one found, confirm and proceed.
+  2. Use 'getUsers' to find the user. If the user asks for a list of users, provide it using 'getUsers' with an empty query. If multiple found, ask to clarify. If one found, confirm and proceed.
   3. Once a user is identified, use 'getUserCourses' to list their courses.
   4. Ask the user which course they want to verify.
   5. Once a course is identified, use 'verifyCertificate' to check its validity.
@@ -74,7 +74,7 @@ export async function sendMessage(message: string) {
 
   // First call to OpenAI to see if it wants to call a tool
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-5.1-mini",
     messages,
     tools: [
       {

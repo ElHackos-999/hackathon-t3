@@ -5,10 +5,12 @@ uniform float uStrength;
 uniform float uWarpPositionFrequency;
 uniform float uWarpTimeFrequency;
 uniform float uWarpStrength;
+uniform float uFrequencies[256];
 
 attribute vec4 tangent;
 
 varying float vWobble;
+varying float vOffset;
 
 //	Simplex 4D Noise
 //	by Ian McEwan, Stefan Gustavson (https://github.com/stegu/webgl-noise)
@@ -139,6 +141,16 @@ void main()
     vec3 toA = normalize(positionA - csm_Position);
     vec3 toB = normalize(positionB - csm_Position);
     csm_Normal = cross(toA, toB);
+
+    // Audio
+    float d = length(position);
+    int i = int(mod(d * 0.5, 256.));
+
+    float f = uFrequencies[i];
+    float offset = f / 512.;
+    offset += sin(f * 0.1) * 0.3;
+
+    vOffset = offset;
 
     // Varying
     vWobble = wobble / uStrength;
