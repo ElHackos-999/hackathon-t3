@@ -34,7 +34,18 @@
       "WebFetch(domain:docs.etherscan.io)",
       "WebFetch(domain:hardhat.org)",
       "WebFetch(domain:docs.base.org)",
-      "Bash(npx hardhat verify --list-networks)"
+      "Bash(npx hardhat verify --list-networks)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(find:*)",
+      "mcp__thirdweb-api__chat",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm eslint:*)",
+      "Bash(pnpm -F @acme/nextjs next build:*)",
+      "WebFetch(domain:portal.thirdweb.com)",
+      "mcp__thirdweb-api__readContract"
     ],
     "deny": [],
     "ask": []
