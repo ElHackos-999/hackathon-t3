@@ -52,9 +52,11 @@ export function Sidebar({ className, footer }: SidebarProps) {
     >
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
-          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-            Platform
-          </h2>
+          <Link href="/">
+            <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+              Platform
+            </h2>
+          </Link>
           <div className="space-y-1">
             {links.map((link) => {
               const Icon = link.icon;
@@ -80,7 +82,7 @@ export function Sidebar({ className, footer }: SidebarProps) {
           </h2>
           <div className="space-y-1">
             <Button
-              variant={pathname?.startsWith("/proof") ? "secondary" : "ghost"}
+              variant={pathname.startsWith("/proof") ? "secondary" : "ghost"}
               className="w-full cursor-pointer justify-start"
               asChild
             >
