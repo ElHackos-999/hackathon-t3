@@ -4,7 +4,7 @@ import type { VerifyLoginPayloadParams } from "thirdweb/auth";
 import { cookies } from "next/headers";
 import dotenv from "dotenv";
 import { createAuth } from "thirdweb/auth";
-import { getProfiles, privateKeyToAccount } from "thirdweb/wallets";
+import { privateKeyToAccount } from "thirdweb/wallets";
 
 import { eq } from "@acme/db";
 import { db } from "@acme/db/client";
@@ -44,7 +44,10 @@ export async function generateLoginPayload(address: string, chainId?: number) {
   });
 }
 
-export async function login(payload: VerifyLoginPayloadParams) {
+export async function login(
+  payload: VerifyLoginPayloadParams,
+  profileData?: { name?: string; email?: string },
+) {
   const thirdwebAuth = getThirdwebAuth();
   const verifiedPayload = await thirdwebAuth.verifyPayload(payload);
 
@@ -61,15 +64,8 @@ export async function login(payload: VerifyLoginPayloadParams) {
     .where(eq(User.walletAddress, walletAddress))
     .limit(1);
 
-  const profiles = getProfiles({ client });
-
-  let email;
-  let name;
-
-  if (profiles) {
-    name = profiles[0]?.details?.name;
-    email = profiles[0]?.details?.email;
-  }
+  const email = profileData?.email;
+  const name = profileData?.name;
 
   // Create user if they don't exist
   if (existingUser.length === 0) {
@@ -81,6 +77,29 @@ export async function login(payload: VerifyLoginPayloadParams) {
     });
 
     // Call the mint function to give users some test NFTs
+  } else {
+    // Update existing user with profile data if available
+    const user = existingUser[0];
+    if (user && (email || name)) {
+      const updates: { name?: string; email?: string } = {};
+
+      // Update name if we have profile name and current name is default
+      if (name && user.name?.startsWith("User-")) {
+        updates.name = name;
+      }
+
+      // Update email if we have profile email and current email is empty
+      if (email && !user.email) {
+        updates.email = email;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await db
+          .update(User)
+          .set(updates)
+          .where(eq(User.walletAddress, walletAddress));
+      }
+    }
   }
 
   const jwt = await thirdwebAuth.generateJWT({
@@ -182,6 +201,44 @@ export async function requireAuth() {
 
   if (!user) {
     throw new Error("Unauthorized");
+  }
+
+  return user;
+}
+
+/**
+ * Update the authenticated user's profile
+ * @param profileData Profile data to update
+ * @returns Updated user data
+ */
+export async function updateUserProfile(profileData: {
+  name?: string;
+  email?: string;
+}) {
+  const user = await requireAuth();
+
+  const updates: { name?: string; email?: string } = {};
+
+  // Update name if provided and current name is default
+  if (profileData.name && user.name?.startsWith("User-")) {
+    updates.name = profileData.name;
+  }
+
+  // Update email if provided and current email is empty
+  if (profileData.email && !user.email) {
+    updates.email = profileData.email;
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await db
+      .update(User)
+      .set(updates)
+      .where(eq(User.walletAddress, user.walletAddress));
+
+    return {
+      ...user,
+      ...updates,
+    };
   }
 
   return user;
