@@ -1,9 +1,9 @@
-import { baseSepolia } from "thirdweb/chains";
 import { getContract } from "thirdweb";
+import { baseSepolia } from "thirdweb/chains";
 
 import { env } from "~/env";
-import { client } from "./thirdwebClient";
 import { ERC_1155_ABI } from "./constants/abi";
+import { client } from "./thirdwebClient";
 
 /**
  * Get the TrainingCertification contract instance

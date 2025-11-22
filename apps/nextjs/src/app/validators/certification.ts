@@ -27,9 +27,7 @@ export const courseNameSchema = z
 /**
  * Image URI validation
  */
-export const imageURISchema = z
-  .string()
-  .min(1, "Image URI is required");
+export const imageURISchema = z.string().min(1, "Image URI is required");
 
 /**
  * Allowed image MIME types

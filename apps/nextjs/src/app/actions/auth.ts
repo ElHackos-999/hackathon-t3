@@ -61,14 +61,16 @@ export async function login(payload: VerifyLoginPayloadParams) {
     .where(eq(User.walletAddress, walletAddress))
     .limit(1);
 
-  const profiles = getProfiles({ client });
+  const profiles = await getProfiles({ client });
 
   let email;
   let name;
 
-  if (profiles) {
-    name = profiles[0]?.details?.name;
-    email = profiles[0]?.details?.email;
+  if (profiles.length > 0) {
+    // @ts-expect-error -- ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    name = profiles[0]?.details.name || `User-${walletAddress.substring(0, 6)}`;
+    email = profiles[0]?.details.email;
   }
 
   // Create user if they don't exist
@@ -90,7 +92,7 @@ export async function login(payload: VerifyLoginPayloadParams) {
   const cookieStore = await cookies();
   cookieStore.set("jwt", jwt, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: "/",
@@ -164,7 +166,7 @@ export async function logout() {
   const cookieStore = await cookies();
   cookieStore.set("jwt", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 0,
     path: "/",

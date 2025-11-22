@@ -55,7 +55,8 @@
     "POSTGRES_URL",
     "THIRDWEB_SECRET_KEY",
     "NEXT_PUBLIC_THIRDWEB_CLIENT_ID",
-    "PORT"
+    "PORT",
+    "OPENAI_API_KEY"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
