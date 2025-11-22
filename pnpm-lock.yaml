@@ -125,6 +125,9 @@ importers:
       next:
         specifier: ^16.0.0
         version: 16.0.0(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      openai:
+        specifier: ^6.9.1
+        version: 6.9.1(ws@8.18.3(bufferutil@4.0.8)(utf-8-validate@6.0.4))(zod@4.1.12)
       react:
         specifier: catalog:react19
         version: 19.1.1
@@ -195,6 +198,9 @@ importers:
       '@trpc/server':
         specifier: 'catalog:'
         version: 11.7.1(typescript@5.9.3)
+      openai:
+        specifier: ^6.9.1
+        version: 6.9.1(ws@8.18.3(bufferutil@4.0.8)(utf-8-validate@6.0.4))(zod@4.1.12)
       superjson:
         specifier: 2.2.3
         version: 2.2.3
@@ -5578,6 +5584,18 @@ packages:
   onetime@5.1.2:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
     engines: {node: '>=6'}
+
+  openai@6.9.1:
+    resolution: {integrity: sha512-vQ5Rlt0ZgB3/BNmTa7bIijYFhz3YBceAA3Z4JuoMSBftBF9YqFHIEhZakSs+O/Ad7EaoEimZvHxD5ylRjN11Lg==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
 
   optionator@0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}
@@ -12833,6 +12851,11 @@ snapshots:
   onetime@5.1.2:
     dependencies:
       mimic-fn: 2.1.0
+
+  openai@6.9.1(ws@8.18.3(bufferutil@4.0.8)(utf-8-validate@6.0.4))(zod@4.1.12):
+    optionalDependencies:
+      ws: 8.18.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+      zod: 4.1.12
 
   optionator@0.8.3:
     dependencies:
