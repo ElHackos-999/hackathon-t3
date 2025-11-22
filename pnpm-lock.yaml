@@ -251,7 +251,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(ccc60202186df8d1b39ba12e0498901e)
       '@nomicfoundation/hardhat-verify':
-        specifier: ^2.0.0
+        specifier: ^2.1.3
         version: 2.1.3(hardhat@2.27.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@24.9.1)(typescript@5.9.3))(typescript@5.9.3))
       '@openzeppelin/contracts':
         specifier: ^5.3.0
@@ -274,6 +274,9 @@ importers:
       chai:
         specifier: ^4.2.0
         version: 4.5.0
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       eslint:
         specifier: 'catalog:'
         version: 9.38.0(jiti@2.6.1)
@@ -3894,6 +3897,10 @@ packages:
 
   dotenv@17.2.2:
     resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
+    engines: {node: '>=12'}
+
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
 
   drizzle-kit@0.31.5:
@@ -10590,6 +10597,8 @@ snapshots:
   dotenv@16.6.1: {}
 
   dotenv@17.2.2: {}
+
+  dotenv@17.2.3: {}
 
   drizzle-kit@0.31.5:
     dependencies:
