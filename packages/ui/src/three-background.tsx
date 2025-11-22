@@ -24,6 +24,7 @@ export function ThreeBackground({ isSpeaking }: ThreeBackgroundProps) {
     if (!containerRef.current) return;
 
     // Scene setup
+    const textureLoader = new THREE.TextureLoader();
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
@@ -43,6 +44,18 @@ export function ThreeBackground({ isSpeaking }: ThreeBackgroundProps) {
     renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
+
+    // Environment setup
+    textureLoader.load('/textures/env-light_small.png', (texture) => {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      scene.environment = texture;
+      scene.environmentIntensity = 1;
+    });
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 1).normalize();
 
     // Sphere setup
     const uniforms = {
