@@ -1,5 +1,5 @@
 import { upload } from "thirdweb/storage";
-import { client } from "./thirdwebClient";
+import { serverClient } from "./thirdwebClient";
 
 /**
  * Upload a file to IPFS using thirdweb storage
@@ -10,7 +10,7 @@ import { client } from "./thirdwebClient";
 export async function uploadToIPFS(file: File): Promise<string> {
   try {
     const uris = await upload({
-      client,
+      client: serverClient,
       files: [file],
     });
 
