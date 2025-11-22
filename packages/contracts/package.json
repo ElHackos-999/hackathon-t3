@@ -10,7 +10,7 @@
     "compile": "npx hardhat compile",
     "coverage": "npx hardhat coverage",
     "test": "npx hardhat test --show-stack-traces",
-    "deploy:base-sepolia": "hardhat run scripts/deploy-training-certification.ts --network baseSepolia"
+    "deploy:base-sepolia": "hardhat ignition deploy ./ignition/modules/training-certification.ts --network baseSepolia"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:*",
