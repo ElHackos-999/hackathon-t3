@@ -8,6 +8,8 @@ import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
 
 import { createCourse } from "~/app/actions/certification";
+import { SuccessDialog } from "./success-dialog";
+import { useRouter } from "next/navigation";
 
 export function CreateCourseForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,6 +19,14 @@ export function CreateCourseForm() {
   } | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [successData, setSuccessData] = useState<{
+    tokenId: string;
+    transactionHash: string;
+  } | null>(null);
+
+
+  const router = useRouter()
 
   async function handleSubmit(formData: FormData) {
     setIsSubmitting(true);
@@ -52,10 +62,13 @@ export function CreateCourseForm() {
       );
 
       if (response.success) {
-        setResult({
-          success: true,
-          message: `Course created successfully! Token ID: ${response.data.tokenId.toString()}, Transaction: ${response.data.transactionHash}`,
+        // Set success data and show dialog
+        setSuccessData({
+          tokenId: response.data.tokenId.toString(),
+          transactionHash: response.data.transactionHash,
         });
+        setShowSuccessDialog(true);
+        router.refresh();
 
         // Reset form and file state
         const form = document.getElementById(
@@ -202,17 +215,20 @@ export function CreateCourseForm() {
         {isSubmitting ? "Creating Course..." : "Create Course"}
       </Button>
 
-      {result && (
-        <div
-          className={`mt-4 rounded-lg border p-4 ${
-            result.success
-              ? "border-green-500 bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-100"
-              : "border-red-500 bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-100"
-          }`}
-        >
+      {result && !result.success && (
+        <div className="mt-4 rounded-lg border border-red-500 bg-red-50 p-4 text-red-900 dark:bg-red-950 dark:text-red-100">
           <p className="text-sm">{result.message}</p>
         </div>
       )}
+
+      <SuccessDialog
+        open={showSuccessDialog}
+        onOpenChange={setShowSuccessDialog}
+        title="Course Created Successfully!"
+        description="Your certification course has been created and deployed to the blockchain."
+        transactionHash={successData?.transactionHash}
+        tokenId={successData?.tokenId}
+      />
     </form>
   );
 }
