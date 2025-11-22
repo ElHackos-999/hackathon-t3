@@ -14,24 +14,18 @@ export const serverClient = createThirdwebClient({
  */
 export async function uploadToIPFS(file: File): Promise<string> {
   try {
-    const uris = await upload({
+    const uri = await upload({
       client: serverClient,
       files: [file],
     });
 
-    if (!uris || uris.length === 0) {
+    if (!uri || typeof uri !== "string") {
       throw new Error("Upload succeeded but no URI returned");
     }
 
-    const uri = uris[0];
-    if (!uri) {
-      throw new Error("Upload succeeded but URI is undefined");
-    }
-
-    // Ensure URI has ipfs:// protocol
-    // If upload returns just the hash (QmXxx...), prepend ipfs://
-    if (!uri.startsWith("ipfs://") && !uri.startsWith("http")) {
-      return `ipfs://${uri}`;
+    // Thirdweb already returns properly formatted ipfs:// URIs for single files
+    if (!uri.startsWith("ipfs://")) {
+      throw new Error(`Invalid IPFS URI format: ${uri}`);
     }
 
     return uri;

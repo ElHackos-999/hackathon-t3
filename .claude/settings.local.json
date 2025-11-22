@@ -45,7 +45,8 @@
       "Bash(pnpm eslint:*)",
       "Bash(pnpm -F @acme/nextjs next build:*)",
       "WebFetch(domain:portal.thirdweb.com)",
-      "mcp__thirdweb-api__readContract"
+      "mcp__thirdweb-api__readContract",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
