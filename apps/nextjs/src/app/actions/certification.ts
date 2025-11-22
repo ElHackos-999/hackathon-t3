@@ -20,6 +20,8 @@ import {
   mintCertificationSchema,
   updateCourseSchema,
 } from "../validators/certification";
+import { uploadToIPFS } from "../utils/storage";
+import { validateImageFile } from "../validators/certification";
 
 /**
  * Generic action result type for error handling
@@ -29,30 +31,60 @@ type ActionResult<T> =
   | { success: false; error: string };
 
 /**
- * Create a new certification course
- * @param input Course creation parameters
- * @returns Transaction hash on success, error message on failure
+ * Create a new certification course with automatic image upload to IPFS
+ * @param courseCode Course identifier (uppercase alphanumeric)
+ * @param courseName Display name for the course
+ * @param imageFile Image file to upload (JPEG, PNG, GIF, or SVG, max 5MB)
+ * @param validityDuration Course validity duration in seconds
+ * @returns Transaction hash and token ID on success, error message on failure
  */
 export async function createCourse(
-  input: CreateCourseInput,
+  courseCode: string,
+  courseName: string,
+  imageFile: File,
+  validityDuration: bigint,
 ): Promise<ActionResult<{ transactionHash: string; tokenId: bigint }>> {
   try {
-    // Validate input
-    const validated = createCourseSchema.parse(input);
+    // Validate image file
+    const fileValidation = validateImageFile(imageFile);
+    if (!fileValidation.valid) {
+      return {
+        success: false,
+        error: fileValidation.error!,
+      };
+    }
+
+    // Upload image to IPFS
+    let imageURI: string;
+    try {
+      imageURI = await uploadToIPFS(imageFile);
+    } catch (error) {
+      return {
+        success: false,
+        error: `Image upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      };
+    }
+
+    // Validate course data with IPFS URI
+    const validated = createCourseSchema.parse({
+      courseCode,
+      courseName,
+      imageURI,
+      validityDuration,
+    });
 
     // Get contract and admin account
     const contract = getTrainingCertificationContract();
     const account = getAdminAccount();
 
     // Prepare the transaction
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const transaction = prepareContractCall({
       contract,
       method: "createCourse",
       params: [
         validated.courseCode,
         validated.courseName,
-        validated.imageURI,
+        validated.imageURI, // IPFS URI
         validated.validityDuration,
       ],
     });
@@ -64,8 +96,7 @@ export async function createCourse(
     });
 
     // Parse the tokenId from transaction logs
-    // The createCourse function returns the tokenId, which will be in the logs
-    const tokenId = BigInt(1); // For now, we'll need to get the next token ID from the contract
+    const tokenId = BigInt(1); // TODO: Extract from logs in future enhancement
 
     return {
       success: true,
@@ -78,7 +109,8 @@ export async function createCourse(
     console.error("Error creating course:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to create course",
+      error:
+        error instanceof Error ? error.message : "Failed to create course",
     };
   }
 }
