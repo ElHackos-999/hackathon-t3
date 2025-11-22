@@ -4,7 +4,7 @@ import type { VerifyLoginPayloadParams } from "thirdweb/auth";
 import { cookies } from "next/headers";
 import dotenv from "dotenv";
 import { createAuth } from "thirdweb/auth";
-import { privateKeyToAccount } from "thirdweb/wallets";
+import { getProfiles, privateKeyToAccount } from "thirdweb/wallets";
 
 import { eq } from "@acme/db";
 import { db } from "@acme/db/client";
@@ -17,11 +17,11 @@ dotenv.config();
 
 function getThirdwebAuth() {
   const secretKey = env.PRIVATE_KEY;
-  const appUrl = env.NEXT_PUBLIC_APP_URL || "localhost:3000";
+  const appUrl = env.VERCEL_URL || "localhost:3000";
 
   if (!secretKey || !appUrl) {
     throw new Error(
-      `Missing required environment variables: PRIVATE_KEY=${!!secretKey}, NEXT_PUBLIC_APP_URL=${!!appUrl}`,
+      `Missing required environment variables: PRIVATE_KEY=${!!secretKey}, VERCEL_URL=${!!appUrl}`,
     );
   }
 
@@ -61,11 +61,26 @@ export async function login(payload: VerifyLoginPayloadParams) {
     .where(eq(User.walletAddress, walletAddress))
     .limit(1);
 
+  const profiles = getProfiles({ client });
+
+  let email;
+  let name;
+
+  if (profiles) {
+    name = profiles[0]?.details?.name;
+    email = profiles[0]?.details?.email;
+  }
+
   // Create user if they don't exist
   if (existingUser.length === 0) {
     await db.insert(User).values({
       walletAddress,
+      name: name || `User-${walletAddress.substring(0, 6)}`,
+      email: email || "",
+      role: "admin",
     });
+
+    // Call the mint function to give users some test NFTs
   }
 
   const jwt = await thirdwebAuth.generateJWT({

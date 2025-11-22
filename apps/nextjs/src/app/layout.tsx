@@ -18,19 +18,8 @@ export const metadata: Metadata = {
       ? "https://turbo.t3.gg"
       : "http://localhost:3000",
   ),
-  title: "PFC",
+  title: "POC",
   description: "Proof of Certification",
-  openGraph: {
-    title: "PFC",
-    description: "Proof of Certification",
-    url: "https://pfc.vercel.app",
-    siteName: "PFC",
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@jullerino",
-    creator: "@jullerino",
-  },
 };
 
 export const viewport: Viewport = {

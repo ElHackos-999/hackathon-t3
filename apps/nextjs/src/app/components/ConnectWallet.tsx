@@ -14,7 +14,7 @@ import { client } from "~/app/utils/thirdwebClient";
 const wallets = [
   inAppWallet({
     auth: {
-      options: ["google", "discord", "telegram", "email", "phone", "passkey"],
+      options: ["google", "email"],
     },
   }),
 ];
