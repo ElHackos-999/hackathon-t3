@@ -1,6 +1,7 @@
-import { env } from "~/env";
 import { createThirdwebClient } from "thirdweb";
 import { upload } from "thirdweb/storage";
+
+import { env } from "~/env";
 
 export const serverClient = createThirdwebClient({
   secretKey: env.THIRDWEB_SECRET_KEY,

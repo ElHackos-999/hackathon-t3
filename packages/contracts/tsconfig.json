@@ -1,6 +1,6 @@
 {
   "extends": "@acme/tsconfig/compiled-package.json",
   "compilerOptions": {},
-  "include": ["*.ts", "src"],
+  "include": ["*.ts", "src", "typechain-types", "ignition", "test"],
   "exclude": ["node_modules"]
 }

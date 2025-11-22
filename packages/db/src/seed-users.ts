@@ -135,9 +135,11 @@ function generateUsers(count: number) {
 
   for (let i = 0; i < count; i++) {
     const firstName =
-      firstNames[Math.floor(Math.random() * firstNames.length)]!;
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)]!;
-    const domain = domains[Math.floor(Math.random() * domains.length)]!;
+      firstNames[Math.floor(Math.random() * firstNames.length)] ?? "John";
+    const lastName =
+      lastNames[Math.floor(Math.random() * lastNames.length)] ?? "Doe";
+    const domain =
+      domains[Math.floor(Math.random() * domains.length)] ?? "example.com";
 
     // 80% chance of having a name
     const hasName = Math.random() < 0.8;

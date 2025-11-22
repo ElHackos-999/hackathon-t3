@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@acme/ui/button";
 import { Field, FieldError, FieldGroup } from "@acme/ui/field";
@@ -10,7 +11,6 @@ import { Label } from "@acme/ui/label";
 
 import { createCourse } from "~/app/actions/certification";
 import { SuccessDialog } from "./success-dialog";
-import { useRouter } from "next/navigation";
 
 export function CreateCourseForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,8 +26,7 @@ export function CreateCourseForm() {
     transactionHash: string;
   } | null>(null);
 
-
-  const router = useRouter()
+  const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
     setIsSubmitting(true);
