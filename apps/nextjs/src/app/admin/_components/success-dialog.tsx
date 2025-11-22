@@ -64,20 +64,20 @@ export function SuccessDialog({
           {/* Token ID */}
           {tokenId && (
             <div className="rounded-lg bg-muted p-3">
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-sm font-medium text-muted-foreground mb-1">
                 Token ID
               </p>
-              <p className="font-mono text-sm">{tokenId}</p>
+              <p className="font-mono text-sm break-all">{tokenId}</p>
             </div>
           )}
 
           {/* Transaction Hash */}
           {transactionHash && (
             <div className="rounded-lg bg-muted p-3">
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-sm font-medium text-muted-foreground mb-1">
                 Transaction Hash
               </p>
-              <p className="truncate font-mono text-sm">{transactionHash}</p>
+              <p className="font-mono text-sm break-all">{transactionHash}</p>
             </div>
           )}
         </div>
