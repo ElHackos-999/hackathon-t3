@@ -1,5 +1,10 @@
+import { env } from "process";
+import { createThirdwebClient } from "thirdweb";
 import { upload } from "thirdweb/storage";
-import { serverClient } from "./thirdwebClient";
+
+export const serverClient = createThirdwebClient({
+  secretKey: env.THIRDWEB_SECRET_KEY ?? "",
+});
 
 /**
  * Upload a file to IPFS using thirdweb storage
@@ -23,11 +28,17 @@ export async function uploadToIPFS(file: File): Promise<string> {
       throw new Error("Upload succeeded but URI is undefined");
     }
 
+    // Ensure URI has ipfs:// protocol
+    // If upload returns just the hash (QmXxx...), prepend ipfs://
+    if (!uri.startsWith("ipfs://") && !uri.startsWith("http")) {
+      return `ipfs://${uri}`;
+    }
+
     return uri;
   } catch (error) {
     console.error("IPFS upload error:", error);
     throw new Error(
-      `Failed to upload to IPFS: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to upload to IPFS: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
