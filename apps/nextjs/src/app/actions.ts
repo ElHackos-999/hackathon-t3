@@ -46,7 +46,10 @@ const tools = {
   },
 };
 
-export async function sendMessage(message: string) {
+export async function sendMessage(
+  message: string,
+  history: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [],
+) {
   const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY,
   });
@@ -68,11 +71,12 @@ export async function sendMessage(message: string) {
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
+    ...history,
     { role: "user", content: message },
   ];
 
-  // First call to OpenAI to see if it wants to call a tool
-  const response = await openai.chat.completions.create({
+  // Initial call to OpenAI
+  let response = await openai.chat.completions.create({
     model: "gpt-4.1-mini",
     messages,
     tools: [
@@ -121,10 +125,10 @@ export async function sendMessage(message: string) {
     tool_choice: "auto",
   });
 
-  const responseMessage = response.choices[0]?.message;
+  let responseMessage = response.choices[0]?.message;
 
-  // Handle tool calls
-  if (responseMessage?.tool_calls) {
+  // Loop to handle multiple tool calls in sequence
+  while (responseMessage?.tool_calls) {
     messages.push(responseMessage); // Add the assistant's message with tool calls
 
     for (const toolCall of responseMessage.tool_calls) {
@@ -150,16 +154,57 @@ export async function sendMessage(message: string) {
       });
     }
 
-    // Second call to OpenAI to get the final response after tool execution
-    const secondResponse = await openai.chat.completions.create({
+    // Call OpenAI again with the tool results
+    response = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
       messages,
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "getUsers",
+            description: "Search for users by name",
+            parameters: {
+              type: "object",
+              properties: {
+                query: { type: "string", description: "The name to search for" },
+              },
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "getUserCourses",
+            description: "Get list of courses for a specific user ID",
+            parameters: {
+              type: "object",
+              properties: {
+                userId: { type: "string", description: "The ID of the user" },
+              },
+              required: ["userId"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "verifyCertificate",
+            description: "Verify the validity of a certificate for a course ID",
+            parameters: {
+              type: "object",
+              properties: {
+                courseId: { type: "string", description: "The ID of the course" },
+              },
+              required: ["courseId"],
+            },
+          },
+        },
+      ],
+      tool_choice: "auto",
     });
 
-    return (
-      secondResponse.choices[0]?.message.content ||
-      "I encountered an error processing your request."
-    );
+    responseMessage = response.choices[0]?.message;
   }
 
   return responseMessage?.content || "I'm sorry, I didn't understand that.";
