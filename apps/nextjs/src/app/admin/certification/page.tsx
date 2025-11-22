@@ -14,14 +14,6 @@ export default async function CertificationAdminPage() {
         Training Certification Management
       </h1>
 
-      {/* Statistics */}
-      <div className="mb-8 rounded-lg border bg-card p-6">
-        <h2 className="mb-2 text-xl font-semibold">Statistics</h2>
-        <p className="text-muted-foreground">
-          Total Courses: {totalCourses.toString()}
-        </p>
-      </div>
-
       {/* Create Course Section */}
       <div className="mb-8 rounded-lg border bg-card p-6">
         <h2 className="mb-4 text-xl font-semibold">Create New Course</h2>
