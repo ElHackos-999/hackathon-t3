@@ -32,7 +32,9 @@
       "Bash(pnpm --filter @acme/contracts test:*)",
       "WebSearch",
       "WebFetch(domain:docs.etherscan.io)",
-      "WebFetch(domain:hardhat.org)"
+      "WebFetch(domain:hardhat.org)",
+      "WebFetch(domain:docs.base.org)",
+      "Bash(npx hardhat verify --list-networks)"
     ],
     "deny": [],
     "ask": []
