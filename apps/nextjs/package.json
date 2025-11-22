@@ -17,7 +17,6 @@
     "@acme/db": "workspace:*",
     "@acme/ui": "workspace:*",
     "@acme/validators": "workspace:*",
-    "@heyputer/puter.js": "^2.1.6",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-form": "catalog:",
     "@tanstack/react-query": "catalog:",
@@ -28,7 +27,6 @@
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "superjson": "2.2.3",
-    "three": "^0.181.2",
     "three-custom-shader-material": "^6.4.0",
     "zod": "catalog:"
   },

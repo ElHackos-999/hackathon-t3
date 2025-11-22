@@ -1,15 +1,23 @@
-import { HydrateClient, prefetch, trpc } from "~/trpc/server";
+"use client";
+
+import { useState } from "react";
+import { ChatInterface } from "@acme/ui/chat-interface";
+import { ThreeBackground } from "@acme/ui/three-background";
 
 export default function HomePage() {
-  prefetch(trpc.post.all.queryOptions());
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   return (
-    <HydrateClient>
-      <main className="container h-screen py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Hello world!
+    <main className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      <ThreeBackground isSpeaking={isSpeaking} />
+
+      <div className="z-10 w-full max-w-4xl px-4 flex flex-col items-center gap-8">
+        <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight text-center drop-shadow-lg">
+          Ask to AI
         </h1>
-      </main>
-    </HydrateClient>
+        
+        <ChatInterface onSpeakingChange={setIsSpeaking} />
+      </div>
+    </main>
   );
 }
