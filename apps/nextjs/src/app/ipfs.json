@@ -1,0 +1,34 @@
+{
+  "workplace-safety": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeieg2gao2epx4ihm5rnxmsx67wr7adkfwu7gtolady2wyspjeouddu",
+    "ipfs": "bafybeieg2gao2epx4ihm5rnxmsx67wr7adkfwu7gtolady2wyspjeouddu"
+  },
+  "machine": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeialghlnq6h6gf2qq57fn7b6guux4ygtfgewumockid2xuzoe3sdde",
+    "ipfs": "bafybeialghlnq6h6gf2qq57fn7b6guux4ygtfgewumockid2xuzoe3sdde"
+  },
+  "hazardous-materials": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeiedpvvw5vsqlty5g2zdpi2grn44u34q4azhkuwhpec527ek3lgeve",
+    "ipfs": "bafybeiedpvvw5vsqlty5g2zdpi2grn44u34q4azhkuwhpec527ek3lgeve"
+  },
+  "food-safety": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeihwuv2zl5lbneiecr5rgfuvqnxz36qe5d5qtzbtgtpxn6ulpinlom",
+    "ipfs": "bafybeihwuv2zl5lbneiecr5rgfuvqnxz36qe5d5qtzbtgtpxn6ulpinlom"
+  },
+  "first-aid": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeicj7k2udfsznfccilptzv2mfal2fespx3ambtsstd7hgp7t4cvm7y",
+    "ipfs": "bafybeicj7k2udfsznfccilptzv2mfal2fespx3ambtsstd7hgp7t4cvm7y"
+  },
+  "fire-safety": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeicvi7qeud5ixq3xi5h6pkpj5tizem624cgxnhmzv4bszysaq2t5ry",
+    "ipfs": "bafybeicvi7qeud5ixq3xi5h6pkpj5tizem624cgxnhmzv4bszysaq2t5ry"
+  },
+  "environment": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeihrwt4mjyoqr7wjo73f2imrmbr2zg6ikd6qr3uxy3rrvios7shdui",
+    "ipfs": "bafybeihrwt4mjyoqr7wjo73f2imrmbr2zg6ikd6qr3uxy3rrvios7shdui"
+  },
+  "cyber": {
+    "image": "https://orange-mad-bear-706.mypinata.cloud/ipfs/bafybeigxfx2uou7whxnpbx6waantwjltu65faxw2xnbhy4ej6ky4asrdhm",
+    "ipfs": "bafybeigxfx2uou7whxnpbx6waantwjltu65faxw2xnbhy4ej6ky4asrdhm"
+  }
+}
