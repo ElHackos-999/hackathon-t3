@@ -29,7 +29,8 @@
       "Bash(pnpm build:*)",
       "Bash(pnpm add:*)",
       "Bash(pnpm coverage:*)",
-      "Bash(pnpm --filter @acme/contracts test:*)"
+      "Bash(pnpm --filter @acme/contracts test:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
