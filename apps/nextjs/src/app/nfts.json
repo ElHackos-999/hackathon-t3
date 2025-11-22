@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Workplace Safety Hero",
+    "description": "A futuristic Australian worker in full PPE standing in a neon industrial site, symbolising core workplace health and safety training across construction, mining and heavy industry.",
+    "course_code": "SAFE-101-AU",
+    "image": "/WorkplaceSafety.png"
+  },
+  {
+    "name": "Food Safety & Hygiene Inspector",
+    "description": "A quality-control specialist in a clean lab coat surrounded by stylised food icons, representing HACCP principles, safe food handling and hygiene for hospitality and food production in Australia.",
+    "course_code": "FOOD-201-AU",
+    "image": "/FoodSafety.png"
+  },
+  {
+    "name": "Fire Safety & Emergency Responder",
+    "description": "A firefighter in bright protective gear holding an extinguisher in front of stylised flames, symbolising fire safety, evacuation procedures and emergency response training for Australian workplaces.",
+    "course_code": "FIRE-301-AU",
+    "image": "/FireSafety.png"
+  },
+  {
+    "name": "Cyber Security Guardian",
+    "description": "A digital guardian with neon visor and shield marked with a lock icon, representing cyber security awareness, phishing prevention and safe data handling for modern Australian businesses.",
+    "course_code": "CYBER-101-AU",
+    "image": "/cyberGuardian.png"
+  },
+  {
+    "name": "First Aid Responder",
+    "description": "A calm first aid professional holding a glowing medical kit, symbolising basic life support, incident response and first aid responsibilities in the workplace.",
+    "course_code": "FIRSTAID-101-AU",
+    "image": "/FirstAid.png"
+  },
+  {
+    "name": "Machine & Equipment Trainer",
+    "description": "A friendly training robot gesturing toward holographic machinery, representing safe operation, lockout–tagout and maintenance procedures for plant and equipment.",
+    "course_code": "MACH-201-AU",
+    "image": "/Machine.png"
+  },
+  {
+    "name": "Environmental Sustainability Guardian",
+    "description": "An eco-themed futuristic figure with glowing Earth and recycling symbols, representing environmental responsibilities, waste reduction and sustainable practices in Australian workplaces.",
+    "course_code": "ENV-101-AU",
+    "image": "/Environmental.png"
+  },
+  {
+    "name": "Hazardous Chemicals & Dangerous Goods Specialist",
+    "description": "A worker in a high-tech protective suit and respirator with a glowing biohazard emblem, symbolising safe handling, storage and emergency management of hazardous chemicals and dangerous goods.",
+    "course_code": "CHEM-301-AU",
+    "image": "/Hazardous.png"
+  }
+]
