@@ -12,11 +12,14 @@ export default function HomePage() {
   const [isPending, startTransition] = useTransition();
   const [response, setResponse] = useState<string>("");
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (
+    message: string,
+    history: { role: "user" | "assistant"; content: string }[],
+  ) => {
     return new Promise<string>((resolve, reject) => {
       startTransition(async () => {
         try {
-          const response = await sendMessage(message);
+          const response = await sendMessage(message, history);
           resolve(response);
 
           setResponse(response);

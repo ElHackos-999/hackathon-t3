@@ -17,7 +17,10 @@ interface Message {
 
 interface ChatInterfaceProps {
   onSpeakingChange: (isSpeaking: boolean) => void;
-  onSendMessage: (message: string) => Promise<string>;
+  onSendMessage: (
+    message: string,
+    history: { role: "user" | "assistant"; content: string }[],
+  ) => Promise<string>;
 }
 
 export function ChatInterface({
@@ -62,7 +65,13 @@ export function ChatInterface({
     onSpeakingChange(true);
 
     try {
-      const response = await onSendMessage(text);
+      // Convert messages to history format (excluding the new user message which is added in actions)
+      const history = messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const response = await onSendMessage(text, history);
 
       setMessages((prev) => [
         ...prev,
