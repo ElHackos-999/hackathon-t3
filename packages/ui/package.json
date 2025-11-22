@@ -15,6 +15,7 @@
     "./input": "./src/input.tsx",
     "./label": "./src/label.tsx",
     "./my-proofs-table": "./src/my-proofs-table.tsx",
+    "./ownership-verification-dialog": "./src/ownership-verification-dialog.tsx",
     "./proof-verification-card": "./src/proof-verification-card.tsx",
     "./admin-course-list": "./src/public-course-list.tsx",
     "./public-course-list": "./src/public-course-list.tsx",
