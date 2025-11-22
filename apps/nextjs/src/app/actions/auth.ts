@@ -6,6 +6,10 @@ import dotenv from "dotenv";
 import { createAuth } from "thirdweb/auth";
 import { privateKeyToAccount } from "thirdweb/wallets";
 
+import { eq } from "@acme/db";
+import { db } from "@acme/db/client";
+import { User } from "@acme/db/schema";
+
 import { client } from "~/app/utils/thirdwebClient";
 import { env } from "~/env";
 
@@ -13,7 +17,7 @@ dotenv.config();
 
 function getThirdwebAuth() {
   const secretKey = env.PRIVATE_KEY;
-  const appUrl = env.NEXT_PUBLIC_APP_URL;
+  const appUrl = env.NEXT_PUBLIC_APP_URL || "localhost:3000";
 
   if (!secretKey || !appUrl) {
     throw new Error(
@@ -46,6 +50,22 @@ export async function login(payload: VerifyLoginPayloadParams) {
 
   if (!verifiedPayload.valid) {
     throw new Error("Invalid payload");
+  }
+
+  const walletAddress = verifiedPayload.payload.address;
+
+  // Check if user exists in database
+  const existingUser = await db
+    .select()
+    .from(User)
+    .where(eq(User.walletAddress, walletAddress))
+    .limit(1);
+
+  // Create user if they don't exist
+  if (existingUser.length === 0) {
+    await db.insert(User).values({
+      walletAddress,
+    });
   }
 
   const jwt = await thirdwebAuth.generateJWT({
@@ -97,8 +117,28 @@ export async function getUser() {
       return null;
     }
 
+    const walletAddress = authResult.parsedJWT.sub;
+
+    // Fetch user from database
+    const users = await db
+      .select()
+      .from(User)
+      .where(eq(User.walletAddress, walletAddress))
+      .limit(1);
+
+    const user = users[0];
+
+    if (!user) {
+      return null;
+    }
+
     return {
-      address: authResult.parsedJWT.sub,
+      id: user.id,
+      walletAddress: user.walletAddress,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
     };
   } catch {
     return null;

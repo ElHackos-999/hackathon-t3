@@ -23,7 +23,7 @@ export async function getPersonalizedGreeting() {
 
   if (user) {
     return {
-      message: `Welcome back! Your wallet: ${shortenAddress(user.address)}`,
+      message: `Welcome back! Your wallet: ${shortenAddress(user.walletAddress)}`,
       isLoggedIn: true,
     };
   }
@@ -41,8 +41,8 @@ export async function getUserProfile() {
   const user = await requireAuth();
 
   return {
-    address: user.address,
-    shortAddress: `${shortenAddress(user.address)}`,
+    address: user.walletAddress,
+    shortAddress: `${shortenAddress(user.walletAddress)}`,
   };
 }
 
@@ -56,11 +56,11 @@ export async function updateUserSettings(settings: {
   const user = await requireAuth();
 
   // Here you would save to database
-  // await db.update(users).set(settings).where(eq(users.address, user.address));
+  // await db.update(users).set(settings).where(eq(users.walletAddress, user.walletAddress));
 
   return {
     success: true,
-    address: user.address,
+    address: user.walletAddress,
     settings,
   };
 }
@@ -76,7 +76,7 @@ export async function createCourseCompletion(data: {
 
   // Example: Save to database
   // const completion = await db.insert(courseCompletions).values({
-  //   userId: user.address,
+  //   userId: user.id,
   //   courseId: data.courseId,
   //   score: data.score,
   //   completedAt: new Date(),
@@ -84,7 +84,7 @@ export async function createCourseCompletion(data: {
 
   return {
     success: true,
-    userAddress: user.address,
+    userAddress: user.walletAddress,
     courseId: data.courseId,
     score: data.score,
     completedAt: new Date().toISOString(),
@@ -100,14 +100,22 @@ export async function debugAuthState() {
   const loggedIn = await isLoggedIn();
   const user = await getUser();
 
+  console.log("JWT:", jwt);
+  console.log("Is Logged In:", loggedIn);
+  console.log("User:", user);
+
   return {
     hasJwtCookie: !!jwt,
     jwtPreview: jwt ? `${jwt.slice(0, 20)}...${jwt.slice(-20)}` : null,
     isLoggedIn: loggedIn,
     user: user
       ? {
-          address: user.address,
-          shortAddress: shortenAddress(user.address),
+          id: user.id,
+          walletAddress: user.walletAddress,
+          shortAddress: shortenAddress(user.walletAddress),
+          name: user.name,
+          email: user.email,
+          role: user.role,
         }
       : null,
     timestamp: new Date().toISOString(),

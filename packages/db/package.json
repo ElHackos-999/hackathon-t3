@@ -36,6 +36,7 @@
     "@vercel/postgres": "^0.10.0",
     "drizzle-orm": "^0.44.7",
     "drizzle-zod": "^0.8.3",
+    "pg": "^8.16.3",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -43,6 +44,7 @@
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@electric-sql/pglite": "^0.3.14",
+    "@types/pg": "^8.15.6",
     "drizzle-kit": "^0.31.5",
     "eslint": "catalog:",
     "prettier": "catalog:",
