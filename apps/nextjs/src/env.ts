@@ -36,6 +36,13 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_THIRDWEB_CLIENT_ID: z.string().min(1).optional(),
+    NEXT_PUBLIC_TRAINING_CERTIFICATION_ADDRESS: z
+      .string()
+      .regex(
+        /^0x[a-fA-F0-9]{40}$/,
+        "Must be a valid Ethereum address",
+      )
+      .optional(),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -43,6 +50,8 @@ export const env = createEnv({
   experimental__runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_THIRDWEB_CLIENT_ID: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID,
+    NEXT_PUBLIC_TRAINING_CERTIFICATION_ADDRESS:
+      process.env.NEXT_PUBLIC_TRAINING_CERTIFICATION_ADDRESS,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",
