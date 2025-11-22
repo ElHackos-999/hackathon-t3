@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ConnectButton, useActiveWallet } from "thirdweb/react";
 import { inAppWallet } from "thirdweb/wallets";
 
@@ -21,6 +22,7 @@ const wallets = [
 
 export function ConnectWallet() {
   const wallet = useActiveWallet();
+  const router = useRouter();
 
   return (
     <ConnectButton
@@ -52,7 +54,10 @@ export function ConnectWallet() {
           return generateLoginPayload(address, chainId);
         },
         doLogin: async (params) => {
+          // Just login without profile data for now
+          // Profile data from getProfiles requires wallet connection context
           await login(params);
+          router.push("/dashboard");
         },
         isLoggedIn: async () => {
           return isLoggedIn();

@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import { pgEnum, pgTable } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
@@ -13,10 +12,8 @@ export const User = pgTable("user", (t) => ({
   name: t.text(),
   email: t.text(),
   role: userRoleEnum().notNull().default("user"),
-  createdAt: t.timestamp().defaultNow().notNull(),
-  updatedAt: t
-    .timestamp({ mode: "date", withTimezone: true })
-    .$onUpdateFn(() => sql`now()`),
+  createdAt: t.timestamp({ mode: "date" }).defaultNow().notNull(),
+  updatedAt: t.timestamp({ mode: "date" }),
 }));
 
 export const CreateUserSchema = createInsertSchema(User, {
@@ -41,7 +38,7 @@ export const Course = pgTable("course", (t) => ({
   validityMonths: t.integer().notNull(),
   tags: t.text().array().notNull(),
   tokenId: t.integer().notNull().unique(),
-  createdAt: t.timestamp().defaultNow().notNull(),
+  createdAt: t.timestamp({ mode: "date" }).defaultNow().notNull(),
 }));
 
 export const CreateCourseSchema = createInsertSchema(Course, {

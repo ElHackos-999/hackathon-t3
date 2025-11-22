@@ -5,8 +5,8 @@ import { cn } from "@acme/ui";
 import { ThemeProvider, ThemeToggle } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
-import { AppLayout } from "~/app/components/AppLayout";
-import { ThirdwebProvider } from "~/app/components/ThirdwebProvider";
+import { AppLayout } from "~/app/_components/AppLayout";
+import { ThirdwebProvider } from "~/app/_components/ThirdwebProvider";
 import { env } from "~/env";
 import { TRPCReactProvider } from "~/trpc/react";
 

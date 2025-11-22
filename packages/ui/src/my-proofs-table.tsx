@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { Button } from "./button";
 import {
   Table,
@@ -9,6 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 interface Proof {
   id: string;
@@ -22,17 +32,14 @@ interface Proof {
 
 interface MyProofsTableProps {
   proofs: Proof[];
-  onRevoke: (proofId: string) => Promise<void>;
-  isRevoking: string | null;
 }
 
-export function MyProofsTable({
-  proofs,
-  onRevoke,
-  isRevoking,
-}: MyProofsTableProps) {
+export function MyProofsTable({ proofs }: MyProofsTableProps) {
+  // Memoize current time to avoid hydration mismatch
+  const now = useMemo(() => new Date(), []);
+
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+    void navigator.clipboard.writeText(text);
     // In a real app, we'd show a toast here
     alert("Copied to clipboard!");
   };
@@ -53,7 +60,7 @@ export function MyProofsTable({
         <TableHeader>
           <TableRow>
             <TableHead>Course</TableHead>
-            <TableHead>Created</TableHead>
+            <TableHead className="hidden sm:table-cell">Created</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -62,11 +69,13 @@ export function MyProofsTable({
           {proofs.map((proof) => (
             <TableRow key={proof.id}>
               <TableCell className="font-medium">{proof.courseName}</TableCell>
-              <TableCell>{proof.createdAt.toLocaleDateString()}</TableCell>
+              <TableCell className="hidden sm:table-cell">
+                {formatDate(proof.createdAt)}
+              </TableCell>
               <TableCell>
                 {proof.isRevoked ? (
-                  <span className="text-destructive">Revoked</span>
-                ) : proof.expiresAt && proof.expiresAt < new Date() ? (
+                  <span className="text-destructive">Renew</span>
+                ) : proof.expiresAt && proof.expiresAt < now ? (
                   <span className="text-yellow-600">Expired</span>
                 ) : (
                   <span className="text-green-600">Active</span>
@@ -80,14 +89,6 @@ export function MyProofsTable({
                   disabled={proof.isRevoked}
                 >
                   Copy Link
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onRevoke(proof.id)}
-                  disabled={proof.isRevoked || !!isRevoking}
-                >
-                  {isRevoking === proof.id ? "Revoking..." : "Revoke"}
                 </Button>
               </TableCell>
             </TableRow>

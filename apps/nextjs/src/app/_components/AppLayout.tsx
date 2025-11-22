@@ -2,6 +2,7 @@ import { Sidebar } from "@acme/ui/sidebar";
 
 import { isLoggedIn } from "~/app/actions/auth";
 import { LandingPage } from "./LandingPage";
+import { ProfileUpdater } from "./ProfileUpdater";
 import { SignOutButton } from "./SignOutButton";
 
 interface AppLayoutProps {
@@ -17,8 +18,9 @@ export async function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar className="hidden md:block" footer={<SignOutButton />} />
-      <main className="flex-1">{children}</main>
+      <ProfileUpdater />
+      <Sidebar footer={<SignOutButton />} />
+      <main className="flex-1 pt-14 md:pt-0">{children}</main>
     </div>
   );
 }
