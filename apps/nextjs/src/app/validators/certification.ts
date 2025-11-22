@@ -57,7 +57,7 @@ export function validateImageFile(file: File): {
   valid: boolean;
   error?: string;
 } {
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
+  if (!(ALLOWED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
     return {
       valid: false,
       error: "File must be JPEG, PNG, GIF, or SVG",
