@@ -28,16 +28,22 @@ export default function DashboardPage() {
   }, []);
 
   // Transform courses to the format expected by CompletedCoursesGrid
-  const completions = courses.map((course) => ({
-    id: course.id,
-    courseName: course.name,
-    courseCode: course.courseCode,
-    completionDate: new Date(course.mintTimestamp * 1000),
-    imageUri: course.imageUrl,
-    tokenId: course.tokenId,
-    expiryDate: new Date(course.expiryTimestamp * 1000),
-    isValid: course.isValid,
-  }));
+  const completions = courses.map((course) => {
+    const completionDate = new Date();
+    const expiryDate = new Date();
+    expiryDate.setMonth(expiryDate.getMonth() + 12);
+
+    return {
+      id: course.id,
+      courseName: course.name,
+      courseCode: course.courseCode,
+      completionDate,
+      imageUri: course.imageUrl,
+      tokenId: course.tokenId,
+      expiryDate,
+      isValid: course.isValid,
+    };
+  });
 
   const isLoading = isPending;
 
@@ -67,36 +73,6 @@ export default function DashboardPage() {
         ) : (
           <CompletedCoursesGrid completions={completions} />
         )}
-      </section>
-
-      <section className="flex w-full flex-col">
-        <h2 className="mb-4 text-xl font-semibold sm:mb-6 sm:text-2xl">
-          Certifications
-        </h2>
-        <div className="overflow-x-auto">
-          <MyProofsTable
-            proofs={[
-              {
-                id: "p1",
-                proofHash: "abc-123-def",
-                courseName: "Blockchain 101",
-                createdAt: new Date("2023-03-01"),
-                expiresAt: new Date("2023-04-01"),
-                isRevoked: false,
-                proofUrl: "http://localhost:3000/proof/abc-123-def",
-              },
-              {
-                id: "p2",
-                proofHash: "xyz-789-ghi",
-                courseName: "Ethereum Development",
-                createdAt: new Date("2023-03-05"),
-                expiresAt: null,
-                isRevoked: true,
-                proofUrl: "http://localhost:3000/proof/xyz-789-ghi",
-              },
-            ]}
-          />
-        </div>
       </section>
     </div>
   );

@@ -117,7 +117,6 @@ function CourseCard({
                       {course.expiryDate && (
                         <div>Expires: {formatDate(course.expiryDate)}</div>
                       )}
-                      <div>Token ID: {course.tokenId}</div>
                     </div>
                   </div>
                 </motion.div>
@@ -195,7 +194,6 @@ function CourseCard({
               {course.expiryDate && (
                 <span>Expires: {formatDate(course.expiryDate)}</span>
               )}
-              <span>Token ID: {course.tokenId}</span>
             </div>
             {course.isValid !== undefined && (
               <motion.div

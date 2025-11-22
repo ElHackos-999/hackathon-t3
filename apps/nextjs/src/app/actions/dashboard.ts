@@ -1,58 +1,12 @@
 "use server";
 
-import { getContract, readContract } from "thirdweb";
-import { baseSepolia } from "thirdweb/chains";
+import { readContract } from "thirdweb";
 
 import { db } from "@acme/db/client";
 import { Course } from "@acme/db/schema";
 
 import { requireAuth } from "~/app/actions/auth";
-import { client } from "~/app/utils/thirdwebClient";
-import { env } from "~/env";
-
-// Contract ABI for the functions we need
-const CONTRACT_ABI = [
-  {
-    inputs: [
-      { name: "account", type: "address" },
-      { name: "id", type: "uint256" },
-    ],
-    name: "balanceOf",
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      { name: "tokenId", type: "uint256" },
-      { name: "holder", type: "address" },
-    ],
-    name: "getExpiryTimestamp",
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      { name: "tokenId", type: "uint256" },
-      { name: "holder", type: "address" },
-    ],
-    name: "getMintTimestamp",
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      { name: "tokenId", type: "uint256" },
-      { name: "holder", type: "address" },
-    ],
-    name: "isValid",
-    outputs: [{ name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
+import { getTrainingCertificationContract } from "~/app/utils/contract";
 
 export interface UserCourse {
   id: string;
@@ -74,18 +28,8 @@ export interface UserCourse {
 export async function getUserCourses(): Promise<UserCourse[]> {
   const user = await requireAuth();
 
-  const contractAddress = env.TRAINING_CERTIFICATION_ADDRESS;
-  if (!contractAddress) {
-    throw new Error("TRAINING_CERTIFICATION_ADDRESS is not configured");
-  }
-
   // Get contract instance
-  const contract = getContract({
-    client,
-    chain: baseSepolia,
-    address: contractAddress as `0x${string}`,
-    abi: CONTRACT_ABI,
-  });
+  const contract = getTrainingCertificationContract();
 
   // Get all courses from database
   const courses = await db.select().from(Course);
@@ -95,6 +39,7 @@ export async function getUserCourses(): Promise<UserCourse[]> {
 
   for (const course of courses) {
     // Check if user owns this certificate
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const balance = (await readContract({
       contract,
       method: "balanceOf",
@@ -103,23 +48,34 @@ export async function getUserCourses(): Promise<UserCourse[]> {
 
     if (balance > 0n) {
       // User owns this certificate, get additional details
-      const [mintTimestamp, expiryTimestamp, isValidResult] = (await Promise.all([
-        readContract({
-          contract,
-          method: "getMintTimestamp",
-          params: [BigInt(course.tokenId), user.walletAddress as `0x${string}`],
-        }),
-        readContract({
-          contract,
-          method: "getExpiryTimestamp",
-          params: [BigInt(course.tokenId), user.walletAddress as `0x${string}`],
-        }),
-        readContract({
-          contract,
-          method: "isValid",
-          params: [BigInt(course.tokenId), user.walletAddress as `0x${string}`],
-        }),
-      ])) as [bigint, bigint, boolean];
+
+      const [mintTimestamp, expiryTimestamp, isValidResult] =
+        (await Promise.all([
+          readContract({
+            contract,
+            method: "getMintTimestamp",
+            params: [
+              BigInt(course.tokenId),
+              user.walletAddress as `0x${string}`,
+            ],
+          }),
+          readContract({
+            contract,
+            method: "getExpiryTimestamp",
+            params: [
+              BigInt(course.tokenId),
+              user.walletAddress as `0x${string}`,
+            ],
+          }),
+          readContract({
+            contract,
+            method: "isValid",
+            params: [
+              BigInt(course.tokenId),
+              user.walletAddress as `0x${string}`,
+            ],
+          }),
+        ])) as [bigint, bigint, boolean];
 
       userCourses.push({
         id: course.id,
@@ -130,8 +86,8 @@ export async function getUserCourses(): Promise<UserCourse[]> {
         tokenId: course.tokenId,
         mintTimestamp: Number(mintTimestamp),
         expiryTimestamp: Number(expiryTimestamp),
-        isValid: isValidResult,
-        validityMonths: course.validityMonths,
+        isValid: !isValidResult,
+        validityMonths: course.validityMonths ?? 12,
       });
     }
   }
