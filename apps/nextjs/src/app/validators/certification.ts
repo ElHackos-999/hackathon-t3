@@ -25,12 +25,54 @@ export const courseNameSchema = z
   .max(100, "Course name must be at most 100 characters");
 
 /**
- * Image URI validation (must be valid URL)
+ * Image URI validation (supports HTTP, HTTPS, and IPFS)
  */
 export const imageURISchema = z
   .string()
-  .url("Must be a valid URL")
-  .min(1, "Image URI is required");
+  .min(1, "Image URI is required")
+  .refine(
+    (val) => /^(https?|ipfs):\/\/.+/.test(val),
+    { message: "Must be a valid HTTP, HTTPS, or IPFS URI" }
+  );
+
+/**
+ * Allowed image MIME types
+ */
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/svg+xml",
+] as const;
+
+/**
+ * Maximum file size (5MB)
+ */
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+/**
+ * Schema for validating uploaded image files
+ */
+export function validateImageFile(file: File): {
+  valid: boolean;
+  error?: string;
+} {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
+    return {
+      valid: false,
+      error: "File must be JPEG, PNG, GIF, or SVG",
+    };
+  }
+
+  if (file.size > MAX_FILE_SIZE) {
+    return {
+      valid: false,
+      error: `File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+    };
+  }
+
+  return { valid: true };
+}
 
 /**
  * Validity duration validation (1 day to 10 years in seconds)
