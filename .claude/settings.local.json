@@ -34,7 +34,10 @@
       "WebFetch(domain:docs.etherscan.io)",
       "WebFetch(domain:hardhat.org)",
       "WebFetch(domain:docs.base.org)",
-      "Bash(npx hardhat verify --list-networks)"
+      "Bash(npx hardhat verify --list-networks)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

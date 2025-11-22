@@ -1,0 +1,161 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@acme/ui/button";
+import { Field, FieldError, FieldGroup } from "@acme/ui/field";
+import { Input } from "@acme/ui/input";
+import { Label } from "@acme/ui/label";
+
+import { createCourse } from "~/app/actions/certification";
+
+export function CreateCourseForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [result, setResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+
+  async function handleSubmit(formData: FormData) {
+    setIsSubmitting(true);
+    setResult(null);
+
+    try {
+      // Extract form data
+      const courseCode = formData.get("courseCode") as string;
+      const courseName = formData.get("courseName") as string;
+      const imageURI = formData.get("imageURI") as string;
+      const validityDurationDays = formData.get(
+        "validityDurationDays",
+      ) as string;
+
+      // Convert days to seconds (BigInt)
+      const validityDuration = BigInt(Number(validityDurationDays) * 86400);
+
+      // Call server action
+      const response = await createCourse({
+        courseCode,
+        courseName,
+        imageURI,
+        validityDuration,
+      });
+
+      if (response.success) {
+        setResult({
+          success: true,
+          message: `Course created successfully! Token ID: ${response.data.tokenId.toString()}, Transaction: ${response.data.transactionHash}`,
+        });
+
+        // Reset form
+        const form = document.getElementById(
+          "create-course-form",
+        ) as HTMLFormElement;
+        form?.reset();
+      } else {
+        setResult({
+          success: false,
+          message: response.error,
+        });
+      }
+    } catch (error) {
+      setResult({
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An error occurred",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <form
+      id="create-course-form"
+      action={handleSubmit}
+      className="space-y-4"
+    >
+      <FieldGroup>
+        <Field>
+          <Label htmlFor="courseCode">Course Code</Label>
+          <Input
+            id="courseCode"
+            name="courseCode"
+            type="text"
+            placeholder="e.g., SAFETY-101"
+            required
+            pattern="[A-Z0-9_-]+"
+            title="Uppercase alphanumeric characters, underscores, and hyphens only"
+            disabled={isSubmitting}
+          />
+          <FieldError>
+            Course code must be uppercase alphanumeric (A-Z, 0-9, _, -)
+          </FieldError>
+        </Field>
+
+        <Field>
+          <Label htmlFor="courseName">Course Name</Label>
+          <Input
+            id="courseName"
+            name="courseName"
+            type="text"
+            placeholder="e.g., Basic Safety Training"
+            required
+            minLength={2}
+            maxLength={100}
+            disabled={isSubmitting}
+          />
+          <FieldError>
+            Course name must be between 2 and 100 characters
+          </FieldError>
+        </Field>
+
+        <Field>
+          <Label htmlFor="imageURI">Image URI</Label>
+          <Input
+            id="imageURI"
+            name="imageURI"
+            type="url"
+            placeholder="https://example.com/image.png"
+            required
+            disabled={isSubmitting}
+          />
+          <FieldError>Must be a valid URL</FieldError>
+        </Field>
+
+        <Field>
+          <Label htmlFor="validityDurationDays">
+            Validity Duration (days)
+          </Label>
+          <Input
+            id="validityDurationDays"
+            name="validityDurationDays"
+            type="number"
+            placeholder="365"
+            required
+            min={1}
+            max={3650}
+            disabled={isSubmitting}
+          />
+          <FieldError>
+            Duration must be between 1 and 3650 days (1-10 years)
+          </FieldError>
+        </Field>
+      </FieldGroup>
+
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Creating Course..." : "Create Course"}
+      </Button>
+
+      {result && (
+        <div
+          className={`mt-4 rounded-lg border p-4 ${
+            result.success
+              ? "border-green-500 bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-100"
+              : "border-red-500 bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-100"
+          }`}
+        >
+          <p className="text-sm">{result.message}</p>
+        </div>
+      )}
+    </form>
+  );
+}
