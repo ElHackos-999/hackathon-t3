@@ -88,9 +88,7 @@ export async function verifyCertificateOwnership(
     return {
       success: false,
       error:
-        error instanceof Error
-          ? error.message
-          : "Failed to verify ownership",
+        error instanceof Error ? error.message : "Failed to verify ownership",
     };
   }
 }
@@ -102,10 +100,10 @@ export async function verifyCertificateOwnership(
  * @param contractAddress - The contract address
  * @returns The challenge message to be signed
  */
-export function generateChallengeMessage(
+export async function generateChallengeMessage(
   tokenId: bigint,
   contractAddress: string,
-): string {
+): Promise<string> {
   const timestamp = Date.now();
   return `Prove ownership of certificate #${tokenId} at contract ${contractAddress}
 
