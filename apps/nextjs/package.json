@@ -23,12 +23,15 @@
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
     "@trpc/tanstack-react-query": "catalog:",
+    "dotenv": "^17.2.3",
     "next": "^16.0.0",
     "openai": "^6.9.1",
+    "pg": "^8.16.3",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "superjson": "2.2.3",
     "three-custom-shader-material": "^6.4.0",
+    "thirdweb": "^5.112.4",
     "zod": "catalog:"
   },
   "devDependencies": {

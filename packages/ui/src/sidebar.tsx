@@ -13,9 +13,11 @@ import { cn } from "@acme/ui";
 
 import { Button } from "./button";
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+  footer?: React.ReactNode;
+}
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, footer }: SidebarProps) {
   const pathname = usePathname();
 
   const links = [
@@ -32,6 +34,11 @@ export function Sidebar({ className }: SidebarProps) {
     {
       name: "Admin",
       href: "/admin",
+      icon: Settings,
+    },
+    {
+      name: "Test Auth Page",
+      href: "/test",
       icon: Settings,
     },
   ];
@@ -76,7 +83,7 @@ export function Sidebar({ className }: SidebarProps) {
           <div className="space-y-1">
             <Button
               variant={pathname?.startsWith("/proof") ? "secondary" : "ghost"}
-              className="w-full justify-start"
+              className="w-full cursor-pointer justify-start"
               asChild
             >
               <Link href="/proof/verify">
@@ -86,6 +93,11 @@ export function Sidebar({ className }: SidebarProps) {
             </Button>
           </div>
         </div>
+        {footer && (
+          <div className="px-3 py-2">
+            <div className="space-y-1">{footer}</div>
+          </div>
+        )}
       </div>
     </div>
   );

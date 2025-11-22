@@ -15,6 +15,18 @@ export const env = createEnv({
    */
   server: {
     POSTGRES_URL: z.url(),
+    PRIVATE_KEY: z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{64}$/, "Must be a valid private key with 0x prefix")
+      .optional(),
+    THIRDWEB_SECRET_KEY: z.string().min(1),
+    TRAINING_CERTIFICATION_ADDRESS: z
+      .string()
+      .regex(
+        /^0x[a-fA-F0-9]{40}$/,
+        "Must be a valid Ethereum address",
+      )
+      .optional(),
     OPENAI_API_KEY: z.string(),
   },
 
@@ -23,15 +35,14 @@ export const env = createEnv({
    * For them to be exposed to the client, prefix them with `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_THIRDWEB_CLIENT_ID: z.string().min(1).optional(),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
   experimental__runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
-
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    NEXT_PUBLIC_THIRDWEB_CLIENT_ID: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID,
   },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",
